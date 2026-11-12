@@ -1,0 +1,18 @@
+{
+ "nota": "Eventos que no están en la Agenda Universitaria. Se mantienen a mano, con el mismo formato que eventos.json. El script de la agenda no toca este archivo.",
+ "eventos": [
+  {
+   "id": "x-mecagala",
+   "titulo": "Meca Gala",
+   "tipo": "Ejemplo del reto",
+   "bloque": "D",
+   "piso": 5,
+   "lugar": "Paraninfo U.C.B.",
+   "fecha": "2026-11-13",
+   "hasta": "2026-11-13",
+   "hora": "19:00",
+   "organizador": "MECAFEST · fecha y hora de ejemplo",
+   "postergado": false
+  }
+ ]
+}

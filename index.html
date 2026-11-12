@@ -1,0 +1,1537 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#1e2a78">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>UbiCato · Campus Obrajes</title>
+<meta name="description" content="Eventos de la UCB La Paz sobre una maqueta 3D del campus, con la ruta más corta a pie.">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<style>
+:root{--azul:#1e2a78;--azul2:#33429f;--naranja:#ff6b00;--crema:#f6f1e3;--tinta:#161b33;--gris:#6b7287;--linea:#e4e7ef;--tabs:60px}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%;overflow:hidden;background:#eef1f6;color:var(--tinta);
+  font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:15px}
+#c{position:fixed;inset:0;width:100%;height:100%;display:block;touch-action:none}
+button,select,input{font:inherit;color:inherit}
+#top{position:fixed;top:0;left:0;right:0;padding:calc(8px + env(safe-area-inset-top)) 10px 0;display:flex;flex-direction:column;gap:6px;pointer-events:none;z-index:5}
+#top>*{pointer-events:auto}
+.barra{display:flex;align-items:center;gap:6px}
+.barra .hueco{flex:1}
+.bico{border:0;background:#fff;color:var(--azul);width:36px;height:36px;border-radius:11px;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(22,27,51,.12)}
+.bico .ico{width:19px;height:19px}
+.brand{background:var(--azul);color:#fff;border-radius:12px;padding:6px 12px;font-weight:800;letter-spacing:.3px;box-shadow:0 4px 14px rgba(30,42,120,.3)}
+.brand select{display:block;font-weight:500;font-size:12.5px;margin-left:-3px;border:0;background:transparent;color:#fff;opacity:.9;outline:none;padding:2px 0}
+.brand select option{color:#161b33}
+body.otro .origen,body.otro #tabs{display:none}
+body.otro #sheet{bottom:0}
+.origen{display:flex;align-items:center;gap:6px;background:#fff;border-radius:12px;padding:5px 6px 5px 10px;box-shadow:0 4px 14px rgba(22,27,51,.12)}
+.origen label{font-size:12px;color:var(--gris);white-space:nowrap}
+.origen select{flex:1;min-width:0;border:0;background:transparent;font-weight:700;padding:6px 0;outline:none}
+#btnGps{border:0;background:#e9edfb;color:var(--azul);border-radius:9px;padding:7px 11px;font-weight:700;font-size:13px;white-space:nowrap;display:flex;align-items:center;gap:5px}
+#btnGps .ico{width:16px;height:16px}
+#btnGps.on{background:#1a73e8;color:#fff}
+#toast{position:fixed;top:calc(104px + env(safe-area-inset-top));left:50%;transform:translateX(-50%);background:rgba(22,27,51,.92);color:#fff;
+  padding:8px 14px;border-radius:20px;font-size:13px;max-width:88vw;text-align:center;opacity:0;transition:opacity .25s;pointer-events:none;z-index:30}
+#toast.on{opacity:1}
+body.ar #toast{top:calc(156px + env(safe-area-inset-top))}
+#tabs{position:fixed;left:0;right:0;bottom:0;height:calc(var(--tabs) + env(safe-area-inset-bottom));padding-bottom:env(safe-area-inset-bottom);
+  background:#fff;display:flex;border-top:1px solid var(--linea);z-index:7}
+#tabs button{flex:1;border:0;background:none;font-size:11px;color:var(--gris);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-weight:600}
+.ico{fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;flex:none}
+#tabs button .ico{width:23px;height:23px}
+.mi{width:15px;height:15px;vertical-align:-3px;margin-right:5px}
+#tabs button.on{color:var(--azul)}
+#sheet{position:fixed;left:0;right:0;bottom:calc(var(--tabs) + env(safe-area-inset-bottom));max-height:47vh;overflow:auto;background:#fff;
+  border-radius:18px 18px 0 0;box-shadow:0 -8px 30px rgba(22,27,51,.16);padding:8px 14px 14px;transform:translateY(110%);transition:transform .28s ease;z-index:6;
+  -webkit-overflow-scrolling:touch}
+#sheet.open{transform:none}
+#sheet.ruta{max-height:40vh}
+.grab{width:38px;height:4px;border-radius:2px;background:#d5d9e4;margin:0 auto 8px}
+#sheetClose{position:absolute;top:8px;right:10px;border:0;background:#f0f2f7;width:30px;height:30px;border-radius:50%;font-size:18px;line-height:1;color:var(--gris)}
+h2{font-size:18px;margin:2px 36px 2px 0;line-height:1.2}
+h3{font-size:12px;text-transform:uppercase;letter-spacing:.6px;color:var(--gris);margin:14px 0 6px}
+.sub{color:var(--gris);font-size:13px;margin:0 0 8px}
+.chips{display:flex;flex-wrap:wrap;gap:5px}
+.chips span{background:#f0f2f9;border-radius:8px;padding:4px 8px;font-size:12.5px}
+.fila{display:flex;gap:8px;margin-top:10px}
+.btn{flex:1;border:0;border-radius:11px;padding:11px 10px;font-weight:700;background:#eceffa;color:var(--azul);text-align:center}
+.btn.pri{background:var(--naranja);color:#fff}
+.btn.azul{background:var(--azul);color:#fff}
+.btn.mini{flex:none;padding:7px 10px;font-size:13px}
+.card{border:1px solid var(--linea);border-radius:13px;padding:10px 11px;margin-top:8px}
+.card b{display:block;font-size:15px}
+.card .meta{font-size:12.5px;color:var(--gris);margin-top:2px}
+.tag{display:inline-block;background:#fff1e5;color:#c24e00;border-radius:6px;padding:1px 6px;font-size:11px;font-weight:700;margin-right:4px}
+.tag.azul{background:#e9edfb;color:var(--azul)}
+.stats{display:flex;gap:8px;margin:8px 0}
+.stats div{flex:1;background:#f5f6fb;border-radius:12px;padding:8px;text-align:center}
+.stats b{display:block;font-size:21px;color:var(--azul)}
+.stats small{color:var(--gris);font-size:11.5px}
+ol.pasos{margin:6px 0 0;padding-left:22px;font-size:14px;line-height:1.45}
+ol.pasos li{margin-bottom:4px}
+.nivel{display:flex;gap:9px;align-items:baseline;padding:7px 9px;border-radius:10px;font-size:13px;line-height:1.35}
+.nivel+.nivel{margin-top:3px}
+.nivel b{flex:none;width:30px;color:var(--azul);font-size:12.5px}
+.nivel span{color:var(--gris)}
+.nivel:nth-child(odd){background:#f7f8fc}
+.nivel.act{background:#fff1e5}
+.nivel.act b,.nivel.act span{color:#c24e00}
+.acc{display:flex;align-items:center;gap:8px;margin-top:10px;font-size:13px;color:var(--gris)}
+.acc input{width:18px;height:18px;accent-color:var(--azul)}
+.form{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.form input,.form select{width:100%;border:1px solid var(--linea);border-radius:10px;padding:9px 9px;background:#fff;min-width:0}
+.form .w2{grid-column:span 2}
+.prox{background:linear-gradient(135deg,var(--azul),var(--azul2));color:#fff;border-radius:14px;padding:12px;margin-top:6px}
+.prox small{opacity:.8;display:block;font-size:12px}
+.prox b{font-size:16px;display:block;margin:2px 0}
+.prox .sal{font-size:22px;font-weight:800;margin-top:4px}
+.clase{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--linea);font-size:13.5px}
+.clase div{flex:1}
+.clase button{border:0;background:#f0f2f7;border-radius:8px;padding:6px 9px 3px;color:var(--gris)}
+.clase .ico{width:17px;height:17px}
+.seg{display:flex;gap:5px;margin:4px 0 2px;overflow-x:auto;scrollbar-width:none}
+.seg button{flex:none;border:0;border-radius:9px;padding:6px 10px;font-size:12.5px;font-weight:700;background:#f0f2f9;color:var(--gris)}
+.seg button.on{background:var(--azul);color:#fff}
+.tag.vivo{background:#e2f6ea;color:#12804a}
+.tag.gris{background:#f0f2f7;color:var(--gris)}
+.busca{width:100%;border:1px solid var(--linea);border-radius:11px;padding:10px 11px;background:#fff;margin-top:4px}
+.res{display:flex;gap:9px;align-items:center;padding:9px 4px;border-bottom:1px solid var(--linea);font-size:13.5px}
+.res div{flex:1;min-width:0}.res small{color:var(--gris);display:block}
+.res .ico{width:17px;height:17px;color:var(--azul)}
+.qrcaja{display:flex;gap:12px;align-items:center;border:1px solid var(--linea);border-radius:13px;padding:10px;margin-top:8px}
+.qrcaja .qr{flex:none;width:132px;height:132px;background:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;color:var(--gris);text-align:center}
+.qrcaja .qr svg,.qrcaja .qr img{width:132px;height:132px}
+.qrcaja b{display:block;font-size:15px}.qrcaja small{color:var(--gris);font-size:12px;word-break:break-all}
+.nota{background:#f7f8fc;border-radius:11px;padding:9px 10px;font-size:12.5px;color:var(--gris);margin-top:10px;line-height:1.4}
+/* Cámara AR */
+#ar{position:fixed;inset:0;z-index:20;background:#0b1630;color:#fff;display:none;overflow:hidden;touch-action:none;user-select:none;-webkit-user-select:none}
+#ar.on{display:block}
+#ar video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:none}
+#ar.cam video{display:block}
+#ar .sim{position:absolute;inset:0;background:linear-gradient(#27407f 0,#6f8fc4 46.8%,#c9d6ea 47%,#1b2a55 47.5%,#0b1630 100%)}
+#ar.cam .sim{display:none}
+#arTira{position:absolute;left:0;right:0;top:env(safe-area-inset-top);height:26px;background:rgba(11,22,48,.55);overflow:hidden}
+#arTira span{position:absolute;top:4px;transform:translateX(-50%);font-size:12.5px;font-weight:700}
+#arTira:after{content:"";position:absolute;left:50%;top:0;bottom:0;width:2px;background:var(--naranja)}
+#arX{position:absolute;left:10px;top:calc(34px + env(safe-area-inset-top));width:44px;height:44px;border-radius:14px;border:0;background:rgba(11,22,48,.72);color:#fff;z-index:3;display:flex;align-items:center;justify-content:center}
+#arHud{position:absolute;left:62px;right:10px;top:calc(34px + env(safe-area-inset-top));background:rgba(11,22,48,.72);border-radius:14px;padding:7px 12px;min-height:44px}
+#arHud p{margin:0;font-size:12px;opacity:.85}
+#arHud #arK{text-transform:uppercase;letter-spacing:.06em;font-size:10.5px;opacity:.7}
+#arHud h2{margin:1px 0;font-size:17px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#arGiro{position:absolute;left:50%;transform:translateX(-50%);top:calc(112px + env(safe-area-inset-top));background:var(--naranja);color:#fff;font-weight:800;font-size:15px;padding:7px 15px;border-radius:20px;white-space:nowrap;box-shadow:0 6px 16px rgba(0,0,0,.3)}
+#arGiro.ok{background:#1fa85a}
+#arRot{position:absolute;inset:0;pointer-events:none}
+#arRot span{position:absolute;transform:translateX(-50%);background:rgba(11,22,48,.66);border-radius:10px;padding:4px 9px;font-size:12.5px;white-space:nowrap}
+#arRot span.dest{background:var(--naranja);font-weight:700}
+#arFlecha{position:absolute;left:50%;top:60%;width:240px;height:240px;margin:-120px 0 0 -120px;pointer-events:none;filter:drop-shadow(0 5px 9px rgba(0,0,0,.45))}
+#arFlecha svg{width:100%;height:100%;overflow:visible}
+#arFlecha .ch{fill:var(--naranja);stroke:#fff;stroke-width:3;stroke-linejoin:round;opacity:.3;animation:fluye 1.5s ease-in-out infinite}
+#arFlecha .c2{animation-delay:.22s}#arFlecha .c3{animation-delay:.44s}
+#arFlecha .rg{fill:rgba(255,107,0,.2);stroke:var(--naranja);stroke-width:3}
+#arFlecha.ok .ch{fill:#3ecb96}#arFlecha.ok .rg{stroke:#3ecb96;fill:rgba(62,203,150,.2)}
+@keyframes fluye{0%,100%{opacity:.25}40%{opacity:1}}
+.arBorde{position:absolute;top:50%;width:40px;height:70px;margin-top:-35px;background:var(--naranja);display:flex;align-items:center;justify-content:center;font-size:30px;font-weight:800}
+#arIzq{left:0;border-radius:0 14px 14px 0}#arDer{right:0;border-radius:14px 0 0 14px}
+#arAviso{position:absolute;left:10px;right:10px;bottom:calc(134px + env(safe-area-inset-bottom));font-size:12px;background:rgba(11,22,48,.72);border-radius:11px;padding:6px 10px;margin:0}
+#arDest{position:absolute;left:0;right:0;bottom:calc(66px + env(safe-area-inset-bottom));display:flex;gap:7px;overflow-x:auto;padding:2px 10px;scrollbar-width:none;touch-action:pan-x}
+#arDest button{flex:none;border:0;border-radius:12px;background:rgba(11,22,48,.78);color:#fff;padding:6px 11px;text-align:left;font-size:13px;max-width:210px}
+#arDest button.on{background:var(--naranja)}
+#arDest b{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}#arDest small{opacity:.8;font-size:11.5px}
+#arDest em{font-style:normal;font-size:10.5px;font-weight:800;color:#7df0b3;text-transform:uppercase}
+#arBarra{position:absolute;left:10px;right:10px;bottom:calc(10px + env(safe-area-inset-bottom));display:flex;gap:7px}
+#arBarra .btn{min-height:46px;font-size:14px}
+#arBarra .btn.sec{background:rgba(11,22,48,.78);color:#fff;box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.45)}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+<g id="i-mapa"><path d="M9 4 3 6.3v13.4L9 17.4l6 2.3 6-2.3V3.9L15 6.3 9 4Z"/><path d="M9 4v13.4M15 6.3v13.4"/></g>
+<g id="i-eventos"><path d="M12 3.6 14.5 9l5.9.8-4.3 4.1 1 5.9-5.1-2.8-5.1 2.8 1-5.9L3.6 9.8 9.5 9Z"/></g>
+<g id="i-cerca"><path d="M12 20.8s6.6-6 6.6-10.6a6.6 6.6 0 1 0-13.2 0C5.4 14.8 12 20.8 12 20.8Z"/><circle cx="12" cy="10.2" r="2.5"/></g>
+<g id="i-horario"><rect x="3.6" y="5.4" width="16.8" height="15" rx="2"/><path d="M3.6 10.2h16.8M8.4 3.2v4M15.6 3.2v4"/></g>
+<g id="i-alarma"><circle cx="12" cy="13.6" r="6.8"/><path d="M12 10.2v3.6l2.4 1.4M4.8 5.6 7.6 3M19.2 5.6 16.4 3"/></g>
+<g id="i-ir"><path d="M5 12h13M12.6 6.6 18 12l-5.4 5.4"/></g>
+<g id="i-quitar"><path d="M6.6 6.6 17.4 17.4M17.4 6.6 6.6 17.4"/></g>
+<g id="i-gps"><circle cx="12" cy="12" r="6.4"/><circle cx="12" cy="12" r="2"/><path d="M12 1.9v3.3M12 18.8v3.3M1.9 12h3.3M18.8 12h3.3"/></g>
+<g id="i-camara"><path d="M4 8h3l1.6-2.4h6.8L17 8h3a1 1 0 0 1 1 1v9.4a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1Z"/><circle cx="12" cy="13.4" r="3.6"/></g>
+<g id="i-buscar"><circle cx="10.8" cy="10.8" r="6.2"/><path d="m15.6 15.6 4.8 4.8"/></g>
+<g id="i-qr"><rect x="3.6" y="3.6" width="6.4" height="6.4" rx="1"/><rect x="14" y="3.6" width="6.4" height="6.4" rx="1"/><rect x="3.6" y="14" width="6.4" height="6.4" rx="1"/><path d="M14 14h2.6v2.6H14zM17.8 17.8h2.6v2.6h-2.6zM20.4 14v1.4M14 20.4h1.4"/></g>
+<g id="i-ajustes"><path d="M4 7h9M17 7h3M4 12h3M11 12h9M4 17h11M19 17h1"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="12" r="2"/><circle cx="17" cy="17" r="2"/></g>
+<g id="i-compartir"><circle cx="6.4" cy="12" r="2.4"/><circle cx="17.2" cy="6" r="2.4"/><circle cx="17.2" cy="18" r="2.4"/><path d="m8.5 10.8 6.6-3.6M8.5 13.2l6.6 3.6"/></g>
+</defs></svg>
+
+
+<header id="top">
+  <div class="barra">
+    <div class="brand">UbiCato<select id="selCampus" aria-label="Campus"></select></div>
+    <span class="hueco"></span>
+    <button class="bico" id="btnBuscar" aria-label="Buscar aula, oficina o servicio"><svg class="ico"><use href="#i-buscar"/></svg></button>
+    <button class="bico" id="btnQR" aria-label="Puntos QR del campus"><svg class="ico"><use href="#i-qr"/></svg></button>
+    <button class="bico" id="btnAdmin" aria-label="Administrar eventos"><svg class="ico"><use href="#i-ajustes"/></svg></button>
+  </div>
+  <div class="origen">
+    <label for="selOrigen">Estoy en…</label>
+    <select id="selOrigen"></select>
+    <button id="btnGps"><svg class="ico"><use href="#i-gps"/></svg>GPS</button>
+  </div>
+</header>
+<div id="toast"></div>
+
+<section id="sheet"><div class="grab"></div><button id="sheetClose" aria-label="Cerrar"><svg class="ico" style="width:16px;height:16px"><use href="#i-quitar"/></svg></button><div id="sheetBody"></div></section>
+
+<nav id="tabs">
+  <button data-tab="mapa" class="on"><svg class="ico"><use href="#i-mapa"/></svg>Mapa</button>
+  <button data-tab="eventos"><svg class="ico"><use href="#i-eventos"/></svg>Eventos</button>
+  <button data-tab="cerca"><svg class="ico"><use href="#i-cerca"/></svg>Cerca de ti</button>
+  <button data-tab="camara"><svg class="ico"><use href="#i-camara"/></svg>Cámara</button>
+  <button data-tab="horario"><svg class="ico"><use href="#i-horario"/></svg>Mi horario</button>
+</nav>
+
+<!-- Cámara AR: flecha sobre la cámara, orientada con la brújula del celular -->
+<section id="ar" aria-label="Guía con la cámara">
+  <video id="arVideo" playsinline muted></video><div class="sim"></div>
+  <div id="arTira"></div>
+  <button id="arX" aria-label="Salir de la cámara"><svg class="ico" style="width:18px;height:18px"><use href="#i-quitar"/></svg></button>
+  <div id="arHud"><p id="arK"></p><h2 id="arA"></h2><p id="arInfo"></p></div>
+  <span id="arGiro" hidden></span>
+  <div id="arRot"></div>
+  <div class="arBorde" id="arIzq" hidden>‹</div><div class="arBorde" id="arDer" hidden>›</div>
+  <div id="arFlecha" hidden><svg viewBox="0 0 160 160" aria-hidden="true"><circle class="rg" cx="80" cy="80" r="22"/><path class="ch c1" d="M80 52 106 76 96 86 80 70 64 86 54 76z"/><path class="ch c2" d="M80 28 106 52 96 62 80 46 64 62 54 52z"/><path class="ch c3" d="M80 4 106 28 96 38 80 22 64 38 54 28z"/></svg></div>
+  <p id="arAviso"></p>
+  <div id="arDest"></div>
+  <div id="arBarra"><button class="btn pri" id="arCam">Activar cámara</button><button class="btn sec" id="arCal" hidden>Calibrar</button><button class="btn sec" id="arSig" hidden></button></div>
+</section>
+
+<script src="https://cdn.jsdelivr.net/npm/three@0.147.0/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.147.0/examples/js/controls/OrbitControls.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+<script>
+/* =====================================================================
+   DATOS EDITABLES  (todo lo que hay que corregir está en este bloque)
+   Coordenadas del plano: x de izquierda a derecha (0–100), y de arriba
+   abajo (0–87), medidas sobre el mapa oficial "Mapa del campus 2025".
+   ===================================================================== */
+
+// Escala: sale del ajuste entre el plano y los 14 puntos GPS de REFERENCIAS_GPS (más abajo):
+// 100 unidades de ancho ≈ 142 m  →  1.42 m por unidad. Antes era una estimación de 2.2.
+const ESCALA = { metrosPorUnidad: 1.42 };
+const VELOCIDAD = 1.3;        // m/s caminando
+const SEG_POR_PISO = 20;      // segundos extra por cada piso de escaleras dentro del bloque
+const SEG_ESCALERA = 15;      // segundos extra por cada escalera exterior del campus
+const MARGEN_MIN = 5;         // minutos de margen para "Sal a las…"
+const ALARMA_MIN = 10;        // la alarma del .ics suena X min antes de la hora de salida
+
+// GPS: centro de cada bloque medido en el campus (latitud, longitud). Vienen del calibrador de 4 esquinas
+// del proyecto "UCB Navigator AR". "de" indica qué polígonos de BLOQUES (o qué nodo) representan ese punto.
+// Con los 14 puntos se ajusta por mínimos cuadrados la transformación plano ↔ GPS (error medio ≈ 4 m).
+// El plano oficial NO apunta al norte: está girado unos 24°, y este ajuste lo corrige solo.
+const REFERENCIAS_GPS = [
+  { de: 'ing',          lat: -16.523095, lng: -68.112327 },
+  { de: ['ATRIO'],      lat: -16.523004, lng: -68.112353 },
+  { de: ['AGORA'],      lat: -16.522523, lng: -68.111858 },
+  { de: ['A'],          lat: -16.522352, lng: -68.111889 },
+  { de: ['B'],          lat: -16.522356, lng: -68.111604 },
+  { de: ['C'],          lat: -16.522475, lng: -68.11134  },
+  { de: ['D'],          lat: -16.522593, lng: -68.112365 },
+  { de: ['F1', 'F2'],   lat: -16.522685, lng: -68.111368 },
+  { de: ['G1', 'G2'],   lat: -16.522698, lng: -68.111958 },
+  { de: ['H'],          lat: -16.522813, lng: -68.11171  },
+  { de: ['I'],          lat: -16.522997, lng: -68.111442 },
+  { de: ['J'],          lat: -16.5228,   lng: -68.112353 },
+  { de: ['K'],          lat: -16.522974, lng: -68.112251 },
+  { de: ['L'],          lat: -16.523363, lng: -68.111601 },
+];
+const RADIO_LLEGADA = 12;     // metros: a esa distancia del destino el GPS avisa que llegaste
+
+// TODO(pisos/aulas): niveles tomados de lo que nos pasó la organización. Corrige aquí lo que falte.
+// Cada bloque lista sus NIVELES de abajo hacia arriba: el índice 0 es la planta baja (PB).
+// Los eventos y las clases guardan ese índice en "piso" (0 = PB, 1 = primer piso, …).
+const BLOQUES = {
+  A:  { nombre: 'Bloque A · Coliseo', letra: 'Coliseo', alto: 3.4, puerta: 'pA', techo: 0x2d3c9c,
+        poli: [[20,10],[42,2.5],[49,15],[21,34],[14,22.5]],
+        niveles: [ { n: 'PB', items: ['Coliseo U.C.B.', 'Departamento de Deportes', 'Club "U" Católica', 'Sala de Danza'] } ] },
+  B:  { nombre: 'Bloque B · Cultura y Arte', puerta: 'pB',
+        poli: [[46,5],[50,3],[57.5,9],[51,13]],
+        niveles: [ { n: 'PB', items: ['Departamento de Cultura y Arte', 'Extensión Cultural'] },
+                   { n: 'P1', items: ['Sala de Literatura', 'Unidad de Auditoría Interna'] } ] },
+  C:  { nombre: 'Bloque C · Edificio de Ingeniería', puerta: 'pC', ascensor: true,
+        poli: [[56,3.5],[89,3],[90,13.5],[59.5,13.5]],
+        niveles: [ { n: 'PB', items: ['Aulas C001 – C004', 'Laboratorios de Ingeniería', 'Laboratorios de Computación', 'Redes y soporte'] },
+                   { n: 'P1', items: ['Oficinas C101 – C105', 'Sala de Docentes'] },
+                   { n: 'P2', items: ['Aulas C201 – C204'] },
+                   { n: 'P3', items: ['Aulas C301 – C304'] },
+                   { n: 'P4', items: ['Aulas C401 – C404'] } ] },
+  D:  { nombre: 'Bloque D', puerta: 'pD', ascensor: true, techo: 0xa85f49,
+        poli: [[13,27],[27.5,42.5],[26,44.5],[15,49.5],[14,58],[2,60.5],[6,41],[9.5,33]],
+        niveles: [ { n: 'PB', items: ['Aulas D1 – D6', 'Central Telefónica', 'Servicio y Mantenimiento'] },
+                   { n: 'P1', items: ['Aulas D7 – D12', 'Sala de Docentes (Ingeniería)', 'Sala de Docentes (Ciencias Básicas)'] },
+                   { n: 'P2', items: ['Aulas D13 – D18', 'Auditorio 2', 'Laboratorio de Computación 4'] },
+                   { n: 'P3', items: ['Aulas D19 – D24', 'Auditorio 3', 'Laboratorio de Redes 5'] },
+                   { n: 'P4', items: ['Aulas D25 – D30', 'Auditorio 4', 'Laboratorio de Psicofisiología'] },
+                   { n: 'P5', items: ['Paraninfo U.C.B.', 'Capilla "San Pablo"'] } ] },
+  F2: { nombre: 'Bloque F2 · ala este', puerta: 'pF2',
+        poli: [[80.5,18.3],[91,17.5],[92.5,31.5],[82,33],[81,26]],
+        niveles: [ { n: 'PB', items: ['Registro Académico (Kardex y Registros)', 'Mediador Universitario'] },
+                   { n: 'P1', items: ['Aulas F8 – F10', 'Laboratorio 1'] },
+                   { n: 'P2', items: ['Aulas F11 – F13', 'Laboratorio 7'] },
+                   { n: 'P3', items: ['Oficinas de Postgrado de Derecho y Ciencias Políticas'] } ] },
+  F1: { nombre: 'Bloque F1 · ala oeste', puerta: 'pF1',
+        poli: [[65,17],[75.5,15.5],[76,18.5],[80.5,18.3],[81,26],[70,28],[66,28.5]],
+        niveles: [ { n: 'PB', items: ['Decanatura de Derecho y Ciencias Políticas', 'Carrera de Derecho', 'Carrera de Ciencias Políticas', 'Salas de Docentes 1 y 2', 'Salas de Reuniones 1, 2 y 3', 'Centro de Estudios Constitucionales'] },
+                   { n: 'P1', items: ['Aulas F1 – F3', 'Instituto para la Democracia', 'Instituto para la Democracia (proyectos)', 'Sala de Investigación'] },
+                   { n: 'P2', items: ['Aulas F4 – F6'] },
+                   { n: 'P3', items: ['Aulas F7A, F7B, F7C y F7D'] } ] },
+  G2: { nombre: 'Bloque G2', puerta: 'pG2',
+        poli: [[31,45.5],[58,28],[63,36.5],[36,54]],
+        niveles: [ { n: 'PB', items: ['Auditorio Principal', 'Aulas G', 'Centro de Sistemas'] },
+                   { n: 'P1', items: ['Aulas G', 'Carreras de la Facultad de Ingeniería'] },
+                   { n: 'P2', items: ['Decanatura de la Facultad de Ingeniería', 'Oficinas de Postgrado de Ingeniería'] },
+                   { n: 'P3', items: ['Laboratorios de Postgrado'] } ] },
+  G1: { nombre: 'Bloque G1', puerta: 'pG1',
+        poli: [[17.5,54],[29,47],[36,54],[33,56.5],[22,58.5]],
+        niveles: [ { n: 'PB', items: ['Caja – Tesorería', 'Aulas G'] },
+                   { n: 'P1', items: ['Escuela de la Producción y la Competitividad (ePC)'] },
+                   { n: 'P2', items: ['Servicios de atención psicológica y salud mental'] } ] },
+  H:  { nombre: 'Bloque H · Cafetería', puerta: 'pH', color: 0xf0eee8, techo: 0x97a0b0, claro: true,
+        poli: [[55.5,46],[66,39],[68,42],[58,49]],
+        niveles: [ { n: 'PB', items: ['Cafetería'] },
+                   { n: 'P1', items: ['Comedor'] } ] },
+  I:  { nombre: 'Bloque I · Biblioteca', puerta: 'pI',
+        poli: [[79,42],[93,39],[94,54],[89,56.5],[79.5,55]],
+        niveles: [ { n: 'PB', items: ['Biblioteca · recepción y préstamo'] },
+                   { n: 'P1', items: ['Salas de lectura'] },
+                   { n: 'P2', items: ['Salas de estudio en grupo'] },
+                   { n: 'P3', items: ['Hemeroteca y archivo'] } ] },
+  CAP:{ nombre: 'Capilla "El Arca"', letra: 'Capilla', alto: 1.6, puerta: 'pCap', color: 0xf0eee8, techo: 0x8f2f28, claro: true,
+        poli: circulo(64.5, 63.5, 3),
+        niveles: [ { n: 'PB', items: ['Capilla "El Arca"'] } ] },
+  // J es de un solo piso y esta al nivel del atrio que corona el Bloque K (por eso "base").
+  J:  { nombre: 'Bloque J', puerta: 'pJ', base: 1.9,
+        poli: [[14.5,61],[22.5,60.8],[23,67.5],[15,68]],
+        niveles: [ { n: 'PB', items: ['Internacionalización Académica y Cooperación Global', 'Vicerrectorado Académico Nacional'] } ] },
+  // K es de un solo piso y su techo es un atrio elevado: de ahi sale la rampa al Bloque J.
+  K:  { nombre: 'Bloque K', puerta: 'pK', techo: 0xc9ced8,
+        poli: [[23.5,61.5],[36,61.8],[40,67],[37,72],[27,71],[23.5,67.5]],
+        niveles: [ { n: 'PB', items: ['Oficina de Informaciones', 'Departamento de Admisión y Orientación', 'Caja', 'Centro Médico U.C.B.', 'Departamento Marketing y Comunicación', 'Pastoral Universitaria', 'Carrera de Administración de Empresas', 'Carrera de Ingeniería Comercial', 'Carrera de Marketing Digital'] } ] },
+  L:  { nombre: 'Bloque L · Rectorado de Sede', puerta: 'pL',
+        poli: [[84,73],[94,73],[94,83],[84,83]],
+        niveles: [ { n: 'PB', items: ['Rectorado de Sede'] },
+                   { n: 'P1', items: ['Dirección Académica de Sede'] } ] },
+  AGORA: { nombre: 'Ágora', letra: 'Ágora', plaza: true, puerta: 'ag',
+        poli: [[23.5,34.5],[50,17.5],[56,25.5],[28,42]],
+        niveles: [ { n: '', items: ['Zona de coworks al aire libre'] } ] },
+  ATRIO: { nombre: 'Atrio', letra: 'Atrio', plaza: true, puerta: 'atr',
+        poli: [[15,74],[38,74],[40,84],[26,84],[15,81]],
+        niveles: [ { n: '', items: ['Ingreso peatonal principal · Av. 14 de Septiembre'] } ] },
+};
+// pisos y dentro se calculan solos a partir de niveles
+Object.values(BLOQUES).forEach(b => { b.pisos = b.plaza ? 0 : b.niveles.length; b.dentro = [].concat(...b.niveles.map(n => n.items)); });
+const nomNivel = (id, i) => { const b = BLOQUES[id]; return b && b.niveles[i] ? b.niveles[i].n : 'PB'; };
+
+// Áreas verdes (solo decoración)
+const VERDES = [
+  [[41,72],[79,72.5],[80,83],[41,83]],
+  [[52,67],[58,56],[68,58.5],[61,67.5]],
+  [[59,50.5],[69,41.5],[73.5,45],[69,52.5]],
+  [[72,30.5],[79.5,29.5],[80,35],[77,38.5]],
+  [[40,61],[49,53],[51,55],[43,64]],
+  [[81,58],[86,58],[86,66],[81,66]],
+];
+// Contorno del terreno del campus
+const TERRENO = [[19,9],[42,1],[52,1],[90,2],[95,33],[96.5,85],[40,86.5],[27,86.5],[13,84],[12,69],[0,65.5],[5,40],[12,27],[13,22]];
+// Parqueo entre F e I (zona café del mapa)
+const PARQUEO = [[76,36],[88,33.5],[92,35],[92,41],[79,43],[76,41]];
+
+// Grafo de caminos. n = cómo se nombra el punto en las instrucciones.
+const NODOS = {
+  ing:  { x: 31.5, y: 85.5, n: 'el Ingreso principal' },
+  atr:  { x: 31,   y: 78,   n: 'el Atrio' },
+  atrO: { x: 21,   y: 73.5 },
+  v3a:  { x: 12,   y: 71.5 },
+  v3:   { x: 4,    y: 69.5, n: 'el ingreso vehicular oeste' },
+  pJ:   { x: 19,   y: 60,   n: 'el Bloque J' },
+  kTecho:{ x: 31.5, y: 66,  n: 'el atrio sobre el Bloque K' },
+  ramG1:{ x: 25,   y: 61,   n: 'el paso junto al Bloque G1' },
+  pK:   { x: 31,   y: 72.5, n: 'el Bloque K' },
+  x2:   { x: 39,   y: 59 },
+  x3:   { x: 29,   y: 60 },
+  pG1:  { x: 29,   y: 58.2, n: 'el Bloque G1' },
+  jn:   { x: 21.5, y: 59.8 },
+  dz:   { x: 16,   y: 57 },
+  pD:   { x: 16.2, y: 51.8, n: 'el Bloque D' },
+  dg:   { x: 28.6, y: 44.3 },
+  ag:   { x: 40,   y: 30,   n: 'el Ágora' },
+  pA:   { x: 47,   y: 8,    n: 'el Coliseo' },   // la entrada esta entre el Coliseo y el Bloque B
+  age:  { x: 54,   y: 21 },
+  // las dos camineras que bordean el Ágora: wa junto al Coliseo, wb junto al Bloque G2
+  wa1:  { x: 24.5, y: 33.3, n: 'la esquina del Ágora' },
+  wa2:  { x: 35,   y: 26.3 },
+  wa3:  { x: 47.5, y: 18.3 },
+  wb1:  { x: 30,   y: 42.2 },
+  wb2:  { x: 45,   y: 33 },
+  wb3:  { x: 55.5, y: 26.8 },
+  kE:   { x: 41.5, y: 68.5 },   // el camino del Atrio pasa por aquí rumbo a la Cafetería
+  rH:   { x: 47.5, y: 53.5 },   // rampa al oeste de las gradas de la Cafetería
+  zz1:  { x: 62.5, y: 22 },     // rampa en zigzag, paralela a las gradas que suben al Bloque C
+  zz2:  { x: 59.8, y: 18.6 },
+  n1:   { x: 57.5, y: 17 },
+  pB:   { x: 53.5, y: 14,   n: 'el Bloque B' },
+  pC:   { x: 62,   y: 15,   n: 'el Bloque C' },
+  n2:   { x: 59.5, y: 25.5 },
+  pF1:  { x: 68,   y: 29.8, n: 'el Bloque F1' },
+  pF2:  { x: 80,   y: 30,   n: 'el Bloque F2' },
+  n3:   { x: 65.5, y: 34.5 },
+  pH:   { x: 62.3, y: 40.6, n: 'la Cafetería' },
+  hg:   { x: 56.5, y: 43.5 },   // pasillo entre la Cafetería y el Bloque G2
+  fs:   { x: 72,   y: 33 },
+  bi:   { x: 76.5, y: 41.5 },
+  pI:   { x: 78,   y: 48.5, n: 'la Biblioteca' },
+  pk:   { x: 84,   y: 34.5, n: 'el parqueo' },
+  v1:   { x: 95.5, y: 33,   n: 'el ingreso vehicular este (norte)' },
+  pG2:  { x: 48.8, y: 46.8, n: 'el Bloque G2' },
+  gs:   { x: 50,   y: 48.5 },
+  st:   { x: 53.5, y: 52.5 },
+  fu:   { x: 47,   y: 61.5, n: 'la fuente' },
+  cen:  { x: 59.5, y: 52 },
+  cn:   { x: 70,   y: 56.5 },
+  pCap: { x: 68,   y: 63.5, n: 'la Capilla El Arca' },
+  is:   { x: 78.5, y: 58 },
+  w1:   { x: 53,   y: 70 },
+  w2:   { x: 66,   y: 69.8 },
+  w3:   { x: 80,   y: 69.5 },
+  pL:   { x: 87,   y: 72,   n: 'el Bloque L' },
+  v2:   { x: 96.5, y: 71,   n: 'el ingreso vehicular este (sur)' },
+};
+// Pasillos. Tercer valor: 'e' = escalera, 'r' = rampa, vacio = plano.
+// Clasificado sobre el plano marcado a mano: rojo = se camina sin gradas, cian = hay gradas.
+const CAMINOS = [
+  ['ing','atr'],['atr','atrO'],['atrO','v3a','e'],['v3a','v3'],
+  ['atr','pK'],['atr','kE'],['kE','fu'],['atr','w1'],['atr','kTecho','e'],['kTecho','ramG1','r'],['ramG1','pJ','r'],['ramG1','x3'],['x2','x3'],['x3','pG1'],['x3','jn'],['jn','dz'],['dz','pD'],
+  ['pD','dg'],['dg','wa1','e'],['wa1','wb1'],['age','pA'],
+  ['wa1','wa2'],['wa2','wa3'],['wa3','age'],['wb1','wb2'],['wb2','wb3'],['wb3','age'],
+  ['ag','wa1'],['ag','wa2'],['ag','wb2'],['ag','wb3'],
+  ['age','n1','e'],['n1','pB'],['n1','pC'],['age','zz1','r'],['zz1','zz2','r'],['zz2','pC','r'],['n1','n2','e'],['n2','zz1','r'],['n2','pF1'],['pF1','pF2'],['n2','n3'],
+  ['n3','pH'],['n3','fs'],['fs','pF2'],['fs','bi','e'],['bi','pI'],['bi','pk'],['pk','v1'],
+  ['x2','gs'],['gs','pG2'],['gs','st','e'],['st','cen','e'],['st','fu'],['fu','w1'],['gs','hg'],['gs','rH','e'],['rH','fu'],['st','x2','r'],['hg','pH'],
+  ['cen','cn'],['cn','pI'],['cn','pCap'],['cn','is'],['is','pI'],['is','w3','e'],
+  ['w1','w2'],['w2','pCap'],['w2','w3'],['w3','pL','e'],['pL','v2'],
+];
+
+// Eventos. piso = índice del nivel (0 = PB). cuando: {dias:0}=hoy, {dias:1}=mañana, {diaSemana:5}=próximo viernes.
+const EVENTOS = [
+  { id: 'techmech', titulo: 'TECH MECH 2026', tipo: 'Hackathon', bloque: 'A', piso: 0, lugar: 'Coliseo UCB', cuando: { dias: 0 }, hora: null },
+  { id: 'gala', titulo: 'Meca Gala', tipo: 'Gala', bloque: 'D', piso: 5, lugar: 'Paraninfo UCB', cuando: { dias: 0 }, hora: '19:00' },
+  { id: 'ia', titulo: 'Conferencia de IA', tipo: 'Conferencia', bloque: 'G2', piso: 0, lugar: 'Auditorio Principal', cuando: { dias: 1 }, hora: '10:00' },
+  { id: 'feria', titulo: 'Feria de emprendimiento', tipo: 'Feria', bloque: 'AGORA', piso: 0, lugar: 'Ágora', cuando: { diaSemana: 5 }, hora: '11:00' },
+  { id: 'tesis', titulo: 'Defensa de tesis · Ing. Mecatrónica', tipo: 'Defensa', bloque: 'C', piso: 2, lugar: 'Aula C201', cuando: { dias: 1 }, hora: '15:00' },
+];
+
+// Horario de ejemplo (formato del reporte "Asignaturas y horarios" de la UCB). dia: 1=lunes … 6=sábado.
+const HORARIO_EJEMPLO = [
+  { materia: 'ECO-132 Contabilidad Nacional', dia: 1, hora: '07:15', bloque: 'D', piso: 0, aula: 'D5' },
+  { materia: 'ADM-113 Administración I',      dia: 1, hora: '09:00', bloque: 'D', piso: 2, aula: 'D13' },
+  { materia: 'CPO-333 Política Exterior',     dia: 2, hora: '10:45', bloque: 'D', piso: 1, aula: 'D10' },
+  { materia: 'ECO-231 Macroeconomía',         dia: 4, hora: '09:00', bloque: 'D', piso: 0, aula: 'D5' },
+  { materia: 'ECO-329 Economía Laboral',      dia: 4, hora: '12:30', bloque: 'D', piso: 0, aula: 'D1' },
+  { materia: 'ECO-122 Microeconomía II',      dia: 5, hora: '17:45', bloque: 'D', piso: 0, aula: 'D5' },
+];
+
+function circulo(cx, cy, r) { const p = []; for (let i = 0; i < 18; i++) { const a = i / 18 * Math.PI * 2; p.push([cx + Math.cos(a) * r, cy + Math.sin(a) * r]); } return p; }
+
+/* =====================================================================
+   GRAFO · DIJKSTRA · PASOS
+   ===================================================================== */
+const MPU = ESCALA.metrosPorUnidad;
+const ADY = {}, TIPO = {};
+Object.keys(NODOS).forEach(k => ADY[k] = []);
+CAMINOS.forEach(([a, b, t]) => {
+  const d = Math.hypot(NODOS[a].x - NODOS[b].x, NODOS[a].y - NODOS[b].y);
+  ADY[a].push([b, d, t]); ADY[b].push([a, d, t]);
+  TIPO[a + '|' + b] = TIPO[b + '|' + a] = t || '';
+});
+
+// evitarGradas = ruta accesible: descarta los tramos con escaleras
+function dijkstra(a, b, evitarGradas) {
+  const dist = {}, prev = {}, pend = new Set(Object.keys(NODOS));
+  pend.forEach(k => dist[k] = Infinity); dist[a] = 0;
+  while (pend.size) {
+    let u = null; pend.forEach(k => { if (u === null || dist[k] < dist[u]) u = k; });
+    if (u === b || dist[u] === Infinity) break;
+    pend.delete(u);
+    ADY[u].forEach(([v, d, t]) => {
+      if (evitarGradas && t === 'e') return;
+      const costo = d * MPU / VELOCIDAD + (t === 'e' ? SEG_ESCALERA : 0);   // segundos, no metros
+      if (dist[u] + costo < dist[v]) { dist[v] = dist[u] + costo; prev[v] = u; }
+    });
+  }
+  const camino = []; let u = b;
+  while (u !== undefined) { camino.unshift(u); u = prev[u]; }
+  return camino[0] === a ? camino : null;
+}
+function nodoCercano(x, y) {
+  let m = null, md = Infinity;
+  for (const k in NODOS) { const d = Math.hypot(NODOS[k].x - x, NODOS[k].y - y); if (d < md) { md = d; m = k; } }
+  return m;
+}
+
+const estado = { origen: 'ing', gps: null, sel: null, ruta: null, tab: 'mapa', accesible: false, filtroEv: 'todos', llegado: null };
+
+// Calcula la ruta desde el origen actual hasta un nodo (+ pisos). Devuelve puntos, metros y segundos.
+function calcRuta(nodoDest, piso) {
+  let pts = [], nombres = [], tramos = [], desde, origenNombre;
+  if (estado.origen === 'gps' && estado.gps) {
+    desde = nodoCercano(estado.gps.x, estado.gps.y);
+    pts.push([estado.gps.x, estado.gps.y]); nombres.push(null); origenNombre = 'tu ubicación';
+  } else { desde = estado.origen; origenNombre = NODOS[desde].n || 'tu punto de partida'; }
+  const camino = dijkstra(desde, nodoDest, estado.accesible);
+  if (!camino) return null;
+  const desfaseGps = pts.length;   // si el origen es el GPS, el primer tramo no tiene tipo
+  camino.forEach((k, i) => {
+    pts.push([NODOS[k].x, NODOS[k].y]); nombres.push(NODOS[k].n || null);
+    tramos.push(i === 0 ? '' : TIPO[camino[i - 1] + '|' + k] || '');
+  });
+  if (desfaseGps) tramos.unshift('');
+  let u = 0; for (let i = 1; i < pts.length; i++) u += Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1]);
+  const metros = u * MPU, subir = Math.max(0, piso || 0);
+  const gradas = tramos.filter(t => t === 'e').length, rampas = tramos.filter(t => t === 'r').length;
+  return { pts, nombres, tramos, origenNombre, metros, pisosSubir: subir, gradas, rampas,
+           seg: metros / VELOCIDAD + subir * SEG_POR_PISO + gradas * SEG_ESCALERA };
+}
+
+function generarPasos(r, dest) {
+  const { pts, nombres, tramos } = r, pasos = [];
+  const de = t => t.split(' de el ').join(' del ').split(' a el ').join(' al ');
+  if (pts.length < 2) pasos.push('Ya estás en ' + dest.nombreLugar + '.');
+  else {
+    // agrupa tramos rectos; una escalera o una rampa siempre va en su propio paso
+    const grupos = []; let angPrev = null;
+    for (let i = 1; i < pts.length; i++) {
+      const dx = pts[i][0] - pts[i - 1][0], dy = pts[i][1] - pts[i - 1][1];
+      const d = Math.hypot(dx, dy) * MPU, ang = Math.atan2(dy, dx) * 180 / Math.PI, t = tramos[i] || '';
+      let giro = angPrev === null ? 0 : ((ang - angPrev + 540) % 360) - 180;
+      const ultimo = grupos[grupos.length - 1];
+      if (!ultimo || t !== ultimo.t || (!t && Math.abs(giro) > 35)) grupos.push({ d, fin: i, giro, t });
+      else { ultimo.d += d; ultimo.fin = i; }
+      angPrev = ang;
+    }
+    grupos.forEach((g, i) => {
+      const ultimo = i === grupos.length - 1;
+      const hasta = ultimo ? ' hasta ' + (dest.nodoNombre || dest.nombreLugar) : (nombres[g.fin] ? ' hasta ' + nombres[g.fin] : '');
+      const destino = hasta.indexOf('las gradas') >= 0 ? '' : hasta;
+      if (g.t === 'e') { pasos.push(de('Sube las gradas' + destino + '.')); return; }
+      if (g.t === 'r') { pasos.push(de('Toma la rampa' + destino + '.')); return; }
+      if (i === 0) { pasos.push(de('Sal de ' + r.origenNombre + ' y sigue recto' + hasta + '.')); return; }
+      const lado = g.giro > 0 ? 'derecha' : 'izquierda';   // en el plano (y hacia abajo) el giro horario es a la derecha
+      const verbo = Math.abs(g.giro) < 60 ? 'Dobla un poco a la ' + lado : 'Gira a la ' + lado;
+      pasos.push(de(hasta ? verbo + ' y sigue' + hasta + '.' : verbo + ' y continúa por el camino.'));
+    });
+  }
+  const b = BLOQUES[dest.bloque];
+  if (r.pisosSubir > 0) {
+    const nivel = nomNivel(dest.bloque, dest.piso), medio = b && b.ascensor ? 'por el ascensor o las gradas' : 'por las gradas';
+    pasos.push(`Entra y sube ${r.pisosSubir} piso${r.pisosSubir > 1 ? 's' : ''} ${medio} hasta ${nivel}: ${dest.lugar || dest.nombreLugar} (≈ ${r.pisosSubir * SEG_POR_PISO} s).`);
+  } else pasos.push(`Llegaste: ${dest.lugar || dest.nombreLugar}${dest.plaza ? '' : ' (planta baja)'}.`);
+  return pasos;
+}
+
+/* =====================================================================
+   ESCENA 3D
+   ===================================================================== */
+const CX = 50, CY = 43.5, ALTO_PISO = 1.7, SEPARACION = 2.3;
+const AZIMUT = 0.45;   // vista en diagonal: aprovecha mejor la pantalla vertical del celular
+const AZUL = 0x1e2a78, AZUL_TECHO = 0x2d3c9c, NARANJA = 0xff6b00;
+const V = (x, y, h) => new THREE.Vector3(x - CX, h || 0, y - CY);
+
+const canvas = document.getElementById('c');
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+const scene = new THREE.Scene(); scene.background = new THREE.Color(0xeef1f6);
+const camera = new THREE.PerspectiveCamera(40, 1, 1, 3000);
+const controls = new THREE.OrbitControls(camera, canvas);
+controls.enableDamping = true; controls.dampingFactor = 0.09; controls.maxPolarAngle = 1.45; controls.minDistance = 18; controls.maxDistance = 600;
+
+scene.add(new THREE.HemisphereLight(0xffffff, 0xc9cfdd, 0.56));
+const sol = new THREE.DirectionalLight(0xffffff, 0.42); sol.position.set(-55, 95, 40); sol.castShadow = true;
+sol.shadow.mapSize.set(2048, 2048); Object.assign(sol.shadow.camera, { left: -80, right: 80, top: 80, bottom: -80, near: 1, far: 300 }); sol.shadow.bias = -0.0006;
+scene.add(sol);
+
+function forma(poli) { const s = new THREE.Shape(); poli.forEach((p, i) => { const X = p[0] - CX, Y = -(p[1] - CY); i ? s.lineTo(X, Y) : s.moveTo(X, Y); }); return s; }
+function plano(poli, color, y) {
+  const m = new THREE.Mesh(new THREE.ShapeGeometry(forma(poli)), new THREE.MeshStandardMaterial({ color, roughness: 1 }));
+  m.rotation.x = -Math.PI / 2; m.position.y = y; m.receiveShadow = true; scene.add(m); return m;
+}
+function centro(poli) { let x = 0, y = 0; poli.forEach(p => { x += p[0]; y += p[1]; }); return [x / poli.length, y / poli.length]; }
+
+// Suelo, avenida, terreno, áreas verdes
+const base = new THREE.Mesh(new THREE.PlaneGeometry(2400, 2400), new THREE.MeshStandardMaterial({ color: 0xdfe6dc, roughness: 1 }));
+base.rotation.x = -Math.PI / 2; base.position.y = -0.05; base.receiveShadow = true; scene.add(base);
+plano([[-12,88.5],[112,87],[112,93],[-12,94.5]], 0xd3d8e2, 0.0);     // Av. 14 de Septiembre
+plano(TERRENO, 0xf6f1e3, 0.02);
+plano(PARQUEO, 0x8d7b68, 0.04);   // parqueo entre F e I
+VERDES.forEach(v => plano(v, 0xa6d79a, 0.05));
+
+// Caminos (franjas crema) a partir del grafo
+const matCamino = new THREE.MeshStandardMaterial({ color: 0xe7d6a4, roughness: 1 });
+CAMINOS.forEach(([a, b]) => {
+  const A = NODOS[a], B = NODOS[b], len = Math.hypot(B.x - A.x, B.y - A.y);
+  const m = new THREE.Mesh(new THREE.PlaneGeometry(len, 1.5), matCamino);
+  m.rotation.x = -Math.PI / 2; m.rotation.z = -Math.atan2(B.y - A.y, B.x - A.x);
+  m.position.copy(V((A.x + B.x) / 2, (A.y + B.y) / 2, 0.08)); m.receiveShadow = true; scene.add(m);
+});
+Object.values(NODOS).forEach(n => { const m = new THREE.Mesh(new THREE.CircleGeometry(0.75, 14), matCamino); m.rotation.x = -Math.PI / 2; m.position.copy(V(n.x, n.y, 0.08)); scene.add(m); });
+
+// Escaleras y rampas del campus (salen del mapa oficial y del recorrido a pie)
+const matGrada = new THREE.MeshStandardMaterial({ color: 0xded6c2, roughness: 1 });
+const matRampa = new THREE.MeshStandardMaterial({ color: 0xb0705c, roughness: 1 });
+function gradas(ax, ay, bx, by, ancho) {
+  const len = Math.hypot(bx - ax, by - ay); if (len < 0.3) return;
+  const ang = -Math.atan2(by - ay, bx - ax), n = Math.max(3, Math.round(len / 0.85));
+  const geo = new THREE.BoxGeometry(0.46, 0.4, ancho);
+  for (let i = 0; i < n; i++) {
+    const k = (i + 0.5) / n, m = new THREE.Mesh(geo, matGrada);
+    m.rotation.y = ang; m.position.copy(V(ax + (bx - ax) * k, ay + (by - ay) * k, 0.22));
+    m.castShadow = m.receiveShadow = true; scene.add(m);
+  }
+}
+CAMINOS.forEach(([a, b, t]) => {
+  if (!t) return;
+  const A = NODOS[a], B = NODOS[b], len = Math.hypot(B.x - A.x, B.y - A.y);
+  if (t === 'r') {   // rampa: franja continua
+    const m = new THREE.Mesh(new THREE.BoxGeometry(len, 0.18, 2.4), matRampa);
+    m.rotation.y = -Math.atan2(B.y - A.y, B.x - A.x);
+    m.position.copy(V((A.x + B.x) / 2, (A.y + B.y) / 2, 0.14)); m.receiveShadow = true; scene.add(m);
+    return;
+  }
+  const subeAK = (a === 'atr' && b === 'kTecho') || (a === 'kTecho' && b === 'atr');
+  if (subeAK) {   // la escalinata del Atrio sube de frente y arriba se parte en dos
+    const mx = (A.x + B.x) / 2, my = (A.y + B.y) / 2;
+    const nx = -(B.y - A.y) / len, ny = (B.x - A.x) / len;   // perpendicular al tramo
+    gradas(A.x, A.y, mx, my, 5);
+    gradas(mx, my, B.x + nx * 2.6, B.y + ny * 2.6, 2.2);
+    gradas(mx, my, B.x - nx * 2.6, B.y - ny * 2.6, 2.2);
+    return;
+  }
+  gradas(A.x, A.y, B.x, B.y, 3);
+});
+
+// Texto en sprites
+function etiqueta(texto, o) {
+  o = Object.assign({ fondo: '#ffffff', color: '#1e2a78', alto: 3.2 }, o || {});
+  const cv = document.createElement('canvas'), g = cv.getContext('2d'), F = 'bold 54px system-ui,-apple-system,Segoe UI,Roboto,sans-serif';
+  g.font = F; const w = Math.max(96, Math.ceil(g.measureText(texto).width) + 52); cv.width = w; cv.height = 96;
+  g.font = F; g.fillStyle = o.fondo; const r = 46;
+  g.beginPath(); g.moveTo(r + 2, 2); g.arcTo(w - 2, 2, w - 2, 94, r); g.arcTo(w - 2, 94, 2, 94, r); g.arcTo(2, 94, 2, 2, r); g.arcTo(2, 2, w - 2, 2, r); g.closePath(); g.fill();
+  g.fillStyle = o.color; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(texto, w / 2, 51);
+  const t = new THREE.CanvasTexture(cv); t.minFilter = THREE.LinearFilter;
+  const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: t, depthTest: false, transparent: true }));
+  s.scale.set(o.alto * w / 96, o.alto, 1); s.renderOrder = 10; return s;
+}
+
+// Fachadas: una textura por color de pared, con franja de ventanas y losa de entrepiso.
+// La V de la textura recorre la altura extruida, así que cada piso repite una franja.
+const texturas = {};
+function texturaFachada(pared, ventana, marco) {
+  const clave = pared + '|' + ventana;
+  if (texturas[clave]) return texturas[clave];
+  const W = 128, H = 128, cv = document.createElement('canvas'); cv.width = W; cv.height = H;
+  const g = cv.getContext('2d');
+  g.fillStyle = pared; g.fillRect(0, 0, W, H);
+  g.fillStyle = marco; g.fillRect(0, 0, W, 13);              // losa de entrepiso
+  g.fillStyle = ventana; g.fillRect(0, 34, W, 56);           // franja de ventanas
+  g.fillStyle = pared;                                        // montantes verticales
+  for (let x = 0; x < W; x += 32) g.fillRect(x, 34, 9, 56);
+  g.globalAlpha = 0.25; g.fillStyle = '#ffffff'; g.fillRect(0, 34, W, 16); g.globalAlpha = 1;
+  const t = new THREE.CanvasTexture(cv);
+  t.wrapS = t.wrapT = THREE.RepeatWrapping; t.anisotropy = 4;
+  return texturas[clave] = t;
+}
+const hex = n => '#' + n.toString(16).padStart(6, '0');
+
+// Bloques: un mesh por piso (para poder despiezarlos)
+const clicables = [], B3D = {};
+Object.keys(BLOQUES).forEach(id => {
+  const b = BLOQUES[id], c = centro(b.poli), g = new THREE.Group(); scene.add(g);
+  const info = B3D[id] = { grupo: g, pisos: [], c, base: b.base || 0, h: ALTO_PISO * (b.alto || 1), radio: Math.max(...b.poli.map(p => Math.hypot(p[0] - c[0], p[1] - c[1]))) };
+  if (b.plaza) {
+    const m = new THREE.Mesh(new THREE.ExtrudeGeometry(forma(b.poli), { depth: 0.14, bevelEnabled: false }), new THREE.MeshStandardMaterial({ color: id === 'AGORA' ? 0xc9ced8 : 0xd9dce3, roughness: 1 }));
+    m.rotation.x = -Math.PI / 2; m.position.y = 0.03; m.receiveShadow = true; m.userData.bloque = id; g.add(m); clicables.push(m); info.h = 0.2;
+  } else {
+    const pared = b.color || AZUL, techo = b.techo || AZUL_TECHO;
+    if (info.base) {   // el bloque arranca sobre una plataforma: dibújala para que no flote
+      const z = new THREE.Mesh(new THREE.ExtrudeGeometry(forma(b.poli), { depth: info.base, bevelEnabled: false }),
+        new THREE.MeshStandardMaterial({ color: 0xc9ced8, roughness: 1 }));
+      z.rotation.x = -Math.PI / 2; z.castShadow = z.receiveShadow = true; g.add(z);
+    }
+    const tex = texturaFachada(hex(pared), b.claro ? '#b9c6da' : '#9fb0d8', b.claro ? '#ffffff' : '#44539e');
+    for (let i = 0; i < b.pisos; i++) {
+      const geo = new THREE.ExtrudeGeometry(forma(b.poli), { depth: info.h - 0.13, bevelEnabled: false });
+      const mapa = tex.clone(); mapa.needsUpdate = true;
+      mapa.repeat.set(1 / 3.2, 1 / (info.h - 0.13));          // una franja de ventanas por piso
+      const m = new THREE.Mesh(geo, [
+        new THREE.MeshStandardMaterial({ color: i === b.pisos - 1 ? techo : pared, roughness: 0.85 }),
+        new THREE.MeshStandardMaterial({ map: mapa, color: 0xffffff, roughness: 0.7 })
+      ]);
+      m.rotation.x = -Math.PI / 2; m.position.y = info.base + 0.1 + i * info.h; m.castShadow = m.receiveShadow = true; m.userData.bloque = id;
+      g.add(m); clicables.push(m); info.pisos.push(m);
+    }
+  }
+  const s = etiqueta(b.letra || id, b.plaza ? { alto: 2.6, color: '#3d4560' } : { alto: 3.6 });
+  s.position.copy(V(c[0], c[1], altoBloque(id) + (b.plaza ? 2.2 : 3))); g.add(s); info.etiqueta = s;
+});
+function altoBloque(id) { const b = BLOQUES[id]; return b.plaza ? 0.2 : B3D[id].base + 0.1 + b.pisos * B3D[id].h; }
+
+// Coworks del Ágora (hexágonos) y árboles
+(function decoracion() {
+  const mat = new THREE.MeshStandardMaterial({ color: 0xf4f5f8, roughness: 0.9 });
+  [[31,37.5],[33.5,36],[36,37.3],[34,39.2],[46,25.5],[48.5,24],[51,25.3],[49,27.2],[44,27.5]].forEach(p => {
+    const m = new THREE.Mesh(new THREE.CylinderGeometry(1, 1, 0.9, 6), mat); m.position.copy(V(p[0], p[1], 0.6)); m.castShadow = true; scene.add(m);
+  });
+  let s = 7; const rnd = () => (s = (s * 16807) % 2147483647) / 2147483647;
+  const dentro = (p, poli) => { let c = false; for (let i = 0, j = poli.length - 1; i < poli.length; j = i++) { const a = poli[i], b = poli[j]; if ((a[1] > p[1]) !== (b[1] > p[1]) && p[0] < (b[0] - a[0]) * (p[1] - a[1]) / (b[1] - a[1]) + a[0]) c = !c; } return c; };
+  const pos = [];
+  VERDES.forEach(v => { const xs = v.map(p => p[0]), ys = v.map(p => p[1]), n = Math.round((Math.max(...xs) - Math.min(...xs)) * (Math.max(...ys) - Math.min(...ys)) / 14);
+    for (let i = 0, k = 0; k < n && i < 400; i++) { const p = [Math.min(...xs) + rnd() * (Math.max(...xs) - Math.min(...xs)), Math.min(...ys) + rnd() * (Math.max(...ys) - Math.min(...ys))];
+      if (dentro(p, v) && !Object.values(NODOS).some(nd => Math.hypot(nd.x - p[0], nd.y - p[1]) < 2.2)) { pos.push(p); k++; } } });
+  const copa = new THREE.InstancedMesh(new THREE.IcosahedronGeometry(1, 1), new THREE.MeshStandardMaterial({ color: 0x5fae5f, roughness: 1, flatShading: true }), pos.length);
+  const tronco = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.14, 0.18, 1.2, 5), new THREE.MeshStandardMaterial({ color: 0x8a6b4a }), pos.length);
+  const o = new THREE.Object3D();
+  pos.forEach((p, i) => { const e = 0.75 + rnd() * 0.6; o.position.copy(V(p[0], p[1], 1.1 + e * 0.7)); o.scale.setScalar(e); o.updateMatrix(); copa.setMatrixAt(i, o.matrix);
+    o.position.copy(V(p[0], p[1], 0.6)); o.scale.setScalar(1); o.updateMatrix(); tronco.setMatrixAt(i, o.matrix); });
+  copa.castShadow = true; scene.add(copa, tronco);
+  // Flecha de ingreso + nombres
+  const fl = new THREE.Shape(); [[0,2.6],[2,0.4],[0.8,0.4],[0.8,-2],[-0.8,-2],[-0.8,0.4],[-2,0.4]].forEach((p, i) => i ? fl.lineTo(p[0], p[1]) : fl.moveTo(p[0], p[1]));
+  const fm = new THREE.Mesh(new THREE.ShapeGeometry(fl), new THREE.MeshBasicMaterial({ color: NARANJA })); fm.rotation.x = -Math.PI / 2; fm.position.copy(V(31.5, 88.6, 0.12)); scene.add(fm);
+  const e1 = etiqueta('INGRESO', { alto: 2.1, fondo: '#ff6b00', color: '#ffffff' }); e1.position.copy(V(31.5, 90, 2.6)); scene.add(e1);
+  const e2 = etiqueta('Av. 14 de Septiembre', { alto: 1.9, fondo: 'rgba(255,255,255,.85)', color: '#6b7287' }); e2.position.copy(V(66, 91, 1.4)); scene.add(e2);
+})();
+
+// Ruta, marcadores y punto GPS
+const rutaG = new THREE.Group(); scene.add(rutaG);
+let rutaCurva = null, rutaTubo = null;
+const pulso = new THREE.Mesh(new THREE.SphereGeometry(0.75, 16, 12), new THREE.MeshBasicMaterial({ color: 0xffffff })); pulso.visible = false; scene.add(pulso);
+const pin = new THREE.Group(); pin.visible = false; scene.add(pin);
+(function () { const m = new THREE.MeshStandardMaterial({ color: 0xe53935, roughness: 0.5 });
+  const c = new THREE.Mesh(new THREE.ConeGeometry(0.9, 2.4, 16), m); c.rotation.x = Math.PI; c.position.y = 1.2;
+  const e = new THREE.Mesh(new THREE.SphereGeometry(1.15, 18, 14), m); e.position.y = 2.9; pin.add(c, e); })();
+const inicio = new THREE.Mesh(new THREE.CylinderGeometry(1.1, 1.1, 0.25, 24), new THREE.MeshBasicMaterial({ color: 0x1fa85a })); inicio.visible = false; scene.add(inicio);
+const gpsG = new THREE.Group(); gpsG.visible = false; scene.add(gpsG);
+const gpsPunto = new THREE.Mesh(new THREE.SphereGeometry(0.9, 18, 14), new THREE.MeshBasicMaterial({ color: 0x1a73e8 })); gpsPunto.position.y = 1;
+const gpsAro = new THREE.Mesh(new THREE.RingGeometry(1.2, 1.6, 32), new THREE.MeshBasicMaterial({ color: 0x1a73e8, transparent: true, opacity: 0.5, side: THREE.DoubleSide })); gpsAro.rotation.x = -Math.PI / 2; gpsAro.position.y = 0.2;
+const gpsTxt = etiqueta('Estás aquí', { alto: 1.9, fondo: '#1a73e8', color: '#ffffff' }); gpsTxt.position.y = 3.6;
+gpsG.add(gpsPunto, gpsAro, gpsTxt);
+
+function dibujarRuta(pts, altoDestino) {
+  limpiarRuta();
+  if (pts.length < 2) pts = [pts[0], [pts[0][0] + 0.01, pts[0][1]]];
+  const cp = new THREE.CurvePath(); for (let i = 1; i < pts.length; i++) cp.add(new THREE.LineCurve3(V(pts[i - 1][0], pts[i - 1][1], 0.45), V(pts[i][0], pts[i][1], 0.45)));
+  rutaCurva = cp;
+  const geo = new THREE.TubeGeometry(cp, Math.max(40, pts.length * 24), 0.42, 8, false);
+  rutaTubo = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({ color: NARANJA })); rutaG.add(rutaTubo);
+  const velo = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({ color: NARANJA, transparent: true, opacity: 0.28, depthTest: false })); velo.renderOrder = 5; rutaG.add(velo);   // se ve a través de los bloques
+  pts.forEach(p => { const j = new THREE.Mesh(new THREE.SphereGeometry(0.42, 10, 8), rutaTubo.material); j.position.copy(V(p[0], p[1], 0.45)); j.userData.junta = true; j.visible = false; rutaG.add(j); });
+  const total = geo.index.count; geo.setDrawRange(0, 0);
+  const juntas = rutaG.children.filter(o => o.userData.junta);
+  tween(1100, k => { geo.setDrawRange(0, Math.floor(total * k / 3) * 3); juntas.forEach((j, i) => j.visible = i / (juntas.length - 1) <= k); });
+  const a = pts[0], z = pts[pts.length - 1];
+  inicio.position.copy(V(a[0], a[1], 0.3)); inicio.visible = true;
+  pin.position.copy(V(z[0], z[1], 0.4)); pin.visible = true; pulso.visible = true;
+}
+function limpiarRuta() { while (rutaG.children.length) { const o = rutaG.children.pop(); o.geometry.dispose(); } rutaCurva = null; pin.visible = inicio.visible = pulso.visible = false; }
+
+// Animaciones
+const tweens = [];
+function tween(dur, fn, fin, canal) { if (canal) for (let i = tweens.length - 1; i >= 0; i--) if (tweens[i].canal === canal) tweens.splice(i, 1); tweens.push({ t0: performance.now(), dur, fn, fin, canal }); }
+const suave = k => k < 0.5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2;
+
+function volar(objetivo, dist, polar, azim) {
+  const o0 = controls.target.clone(), s0 = new THREE.Spherical().setFromVector3(camera.position.clone().sub(controls.target));
+  const s1 = { r: dist, phi: polar == null ? s0.phi : polar, th: azim == null ? s0.theta : azim };
+  let dth = s1.th - s0.theta; dth = ((dth + Math.PI) % (2 * Math.PI) + 2 * Math.PI) % (2 * Math.PI) - Math.PI;
+  tween(850, k => {
+    const s = new THREE.Spherical(s0.radius + (s1.r - s0.radius) * k, s0.phi + (s1.phi - s0.phi) * k, s0.theta + dth * k);
+    controls.target.lerpVectors(o0, objetivo, k); camera.position.setFromSpherical(s).add(controls.target);
+  }, null, 'cam');
+}
+function distGeneral() { const a = camera.aspect, hf = Math.atan(Math.tan(camera.fov * Math.PI / 360) * a); return Math.min(520, Math.max(150, 51 / Math.tan(hf))); }
+function vistaGeneral(anim) {
+  const d = distGeneral();
+  if (anim) volar(new THREE.Vector3(0, 0, 3), d, 0.62, AZIMUT);
+  else { controls.target.set(0, 0, 3); camera.position.setFromSpherical(new THREE.Spherical(d, 0.62, AZIMUT)).add(controls.target); }
+}
+
+// Despiece por pisos
+let despiece = null;   // { id, t, tags:[] }
+function aplicarDespiece(id, t) {
+  const inf = B3D[id], n = inf.pisos.length;
+  inf.pisos.forEach((m, i) => m.position.y = inf.base + 0.1 + i * inf.h + t * i * SEPARACION);
+  inf.etiqueta.position.y = inf.base + 0.1 + n * inf.h + t * (n - 1) * SEPARACION + 3;
+  if (despiece) despiece.tags.forEach(s => { s.position.y = inf.base + 0.1 + s.userData.i * inf.h + t * s.userData.i * SEPARACION + inf.h / 2; s.material.opacity = t; });
+}
+function pintarPisos(id, piso) {
+  B3D[id].pisos.forEach((m, i) => { const sel = piso === i, at = piso !== null && !sel;
+    m.material[0].color.setHex(sel ? 0xffa54d : AZUL_TECHO); m.material[1].color.setHex(sel ? NARANJA : AZUL);
+    m.material.forEach(x => { x.transparent = !!at; x.opacity = at ? 0.45 : 1; x.needsUpdate = true; }); m.castShadow = !at; });
+}
+function verPisos(id, piso, lugar) {
+  const b = BLOQUES[id]; if (!b || b.pisos < 2) return false;
+  if (despiece && despiece.id !== id) cerrarPisos(true);
+  if (despiece) { despiece.tags.forEach(s => B3D[id].grupo.remove(s)); }
+  const inf = B3D[id], tags = [];
+  // la cámara mira el bloque desde afuera del campus (nada lo tapa); las etiquetas van a su derecha
+  const az = Math.max(-1.7, Math.min(1.7, Math.atan2(inf.c[0] - CX, inf.c[1] - CY + 12))), der = [Math.cos(az), -Math.sin(az)];
+  for (let i = 0; i < b.pisos; i++) {
+    const sel = piso === i;
+    const s = etiqueta(sel ? `${nomNivel(id, i)}${lugar ? ' · ' + lugar : ''}` : nomNivel(id, i), sel ? { alto: 2.3, fondo: '#ff6b00', color: '#fff' } : { alto: 1.5, fondo: 'rgba(255,255,255,.9)', color: '#6b7287' });
+    s.center.set(0, 0.5); s.position.copy(V(inf.c[0] + der[0] * (inf.radio * 0.6 + 1.5), inf.c[1] + der[1] * (inf.radio * 0.6 + 1.5), 0)); s.userData.i = i; inf.grupo.add(s); tags.push(s);
+  }
+  const t0 = despiece ? despiece.t : 0; despiece = { id, t: t0, tags }; pintarPisos(id, piso == null ? null : piso);
+  tween(900, k => { despiece.t = t0 + (1 - t0) * k; aplicarDespiece(id, despiece.t); }, null, 'pisos');
+  const hTot = b.pisos * inf.h + (b.pisos - 1) * SEPARACION;
+  const hf = Math.atan(Math.tan(camera.fov * Math.PI / 360) * camera.aspect);
+  volar(V(inf.c[0] + der[0] * 3, inf.c[1] + der[1] * 3, hTot * 0.45), Math.max(70, hTot * 2.6, (inf.radio + 7) / Math.tan(hf)), 1.12, az);
+  Object.keys(B3D).forEach(k => B3D[k].etiqueta.visible = k === id);
+  return true;
+}
+function cerrarPisos(ya) {
+  if (!despiece) return; const d = despiece, id = d.id; pintarPisos(id, null);
+  Object.keys(B3D).forEach(k => B3D[k].etiqueta.visible = true);
+  const fin = () => { d.tags.forEach(s => B3D[id].grupo.remove(s)); if (despiece === d) despiece = null; };
+  if (ya) { aplicarDespiece(id, 0); fin(); despiece = null; return; }
+  const t0 = d.t; tween(600, k => { d.t = t0 * (1 - k); aplicarDespiece(id, d.t); }, fin, 'pisos');
+}
+
+// Bucle de render
+let desfase = 0;
+const sheet = document.getElementById('sheet');
+function ajustar() { const w = window.innerWidth, h = window.innerHeight; renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix(); }
+window.addEventListener('resize', ajustar);
+function cuadro(ahora) {
+  requestAnimationFrame(cuadro);
+  for (let i = tweens.length - 1; i >= 0; i--) { const t = tweens[i], k = Math.min(1, (ahora - t.t0) / t.dur); t.fn(suave(k)); if (k >= 1) { tweens.splice(tweens.indexOf(t), 1); t.fin && t.fin(); } }
+  controls.update();
+  // desplaza la vista hacia arriba cuando el panel inferior está abierto
+  const quiero = sheet.classList.contains('open') ? sheet.offsetHeight / 2 : 0; desfase += (quiero - desfase) * 0.15;
+  const w = window.innerWidth, h = window.innerHeight; camera.setViewOffset(w, h, 0, Math.round(desfase), w, h);
+  const s = ahora / 1000;
+  if (rutaCurva && pulso.visible) pulso.position.copy(rutaCurva.getPointAt((s * 0.22) % 1)).setY(0.9);
+  if (pin.visible) pin.children.forEach((c, i) => c.position.y = (i ? 2.9 : 1.2) + Math.abs(Math.sin(s * 3)) * 0.9 + (pin.userData.h || 0));
+  if (gpsG.visible) { const e = 1 + (s % 1.6) * 1.4; gpsAro.scale.set(e, e, 1); gpsAro.material.opacity = 0.55 * (1 - (s % 1.6) / 1.6); }
+  if (!AR.on) renderer.render(scene, camera);
+}
+
+/* =====================================================================
+   INTERFAZ
+   ===================================================================== */
+const $ = s => document.querySelector(s), cuerpo = $('#sheetBody');
+const esc = t => String(t == null ? '' : t).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+let toastT; function toast(m) { const t = $('#toast'); t.textContent = m; t.classList.add('on'); clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('on'), 3200); }
+function abrir(html, ruta) { cuerpo.innerHTML = html; sheet.classList.toggle('ruta', !!ruta); sheet.classList.add('open'); sheet.scrollTop = 0; }
+function cerrar() { sheet.classList.remove('open'); }
+function marcarTab(t) { estado.tab = t; document.querySelectorAll('#tabs button').forEach(b => b.classList.toggle('on', b.dataset.tab === t)); }
+
+const DIAS = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'], MESES = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'];
+function fechaEvento(ev) {
+  let d = new Date(); d.setHours(0, 0, 0, 0);
+  if (ev.fecha) { const p = ev.fecha.split('-').map(Number); d = new Date(p[0], p[1] - 1, p[2]); if (d < new Date().setHours(0, 0, 0, 0)) d = new Date(new Date().setHours(0, 0, 0, 0)); }   // si ya empezó, sigue en curso hoy
+  else if (ev.cuando.dias != null) d.setDate(d.getDate() + ev.cuando.dias); else d.setDate(d.getDate() + ((ev.cuando.diaSemana - d.getDay() + 7) % 7));
+  const hoy = new Date(); hoy.setHours(0, 0, 0, 0); const dif = Math.round((d - hoy) / 864e5);
+  return `${dif === 0 ? 'Hoy' : dif === 1 ? 'Mañana' : DIAS[d.getDay()]} ${d.getDate()} ${MESES[d.getMonth()]} · ${ev.hora || 'Todo el día'}`;
+}
+// Día de inicio de un evento (los de ejemplo usan "cuando"; los de la agenda y los agregados, "fecha")
+function diaEvento(ev, campo) {
+  const d = new Date(); d.setHours(0, 0, 0, 0);
+  const f = ev[campo || 'fecha'] || ev.fecha;
+  if (f) { const p = f.split('-').map(Number); return new Date(p[0], p[1] - 1, p[2]); }
+  if (ev.cuando && ev.cuando.dias != null) d.setDate(d.getDate() + ev.cuando.dias);
+  else if (ev.cuando) d.setDate(d.getDate() + ((ev.cuando.diaSemana - d.getDay() + 7) % 7));
+  return d;
+}
+// La agenda no trae hora de fin: un evento de hoy que ya empezó se muestra "En curso" hasta que acaba el día.
+function estadoEvento(ev) {
+  const hoy = new Date(); hoy.setHours(0, 0, 0, 0);
+  const ini = diaEvento(ev), fin = diaEvento(ev, 'hasta');
+  if (fin < hoy) return { k: 'fin', txt: 'Finalizó' };
+  if (ini > hoy) return { k: 'prox', txt: 'Próximo' };
+  if (ini < hoy || !ev.hora) return { k: 'vivo', txt: 'En curso' };
+  const hm = ev.hora.split(':').map(Number), t0 = new Date(hoy); t0.setHours(hm[0], hm[1] || 0);
+  return new Date() >= t0 ? { k: 'vivo', txt: 'En curso' } : { k: 'hoy', txt: 'Hoy' };
+}
+const lugarEvento = ev => { const b = BLOQUES[ev.bloque]; if (!b) return esc(ev.lugar);   // virtual o fuera de la maqueta
+  if (ev.agenda) return esc(ev.lugar);   // la agenda ya trae bloque y piso en su texto
+  return `${esc(ev.lugar)} · ${b.plaza ? 'al aire libre' : esc(b.nombre.split(' · ')[0]) + ' · ' + nomNivel(ev.bloque, ev.piso)}`; };
+const fmtMin = seg => Math.max(1, Math.ceil(seg / 60));
+function tarjetaEvento(ev, extra) {
+  const st = estadoEvento(ev);
+  return `<div class="card"><span class="tag ${st.k === 'vivo' ? 'vivo' : st.k === 'fin' ? 'gris' : 'azul'}">${st.txt}</span><span class="tag">${esc(ev.tipo)}</span>${extra || ''}<b>${esc(ev.titulo)}</b>
+    <div class="meta"><svg class="ico mi"><use href="#i-horario"/></svg>${fechaEvento(ev)}</div><div class="meta"><svg class="ico mi"><use href="#i-cerca"/></svg>${lugarEvento(ev)}</div>
+    ${ev.organizador ? `<div class="meta">Organiza: ${esc(ev.organizador)}</div>` : ''}
+    ${ev.bloque ? `<div class="fila"><button class="btn pri" data-act="ir" data-ev="${ev.id}">Llévame</button><button class="btn" data-act="ver" data-ev="${ev.id}">Ver en el mapa</button><button class="btn mini" data-act="comp" data-ev="${ev.id}" aria-label="Compartir"><svg class="ico" style="width:18px;height:18px"><use href="#i-compartir"/></svg></button></div>` : ''}</div>`;
+}
+
+function panelBloque(id, piso, lugar) {
+  const b = BLOQUES[id]; estado.sel = { bloque: id, piso: piso || 0, lugar: lugar || null };
+  const evs = EVENTOS.filter(e => e.bloque === id);
+  const niveles = b.plaza ? '' : '<h3>Qué hay en cada piso</h3>' + b.niveles.map((n, i) => i).reverse().map(i => {
+    const n = b.niveles[i], act = piso === i;
+    return `<div class="nivel${act ? ' act' : ''}" data-act="nivel" data-i="${i}"><b>${esc(n.n)}</b><span>${n.items.map(esc).join(' · ')}</span></div>`;
+  }).join('');
+  abrir(`<h2>${esc(b.nombre)}</h2><p class="sub">${b.plaza ? 'Espacio al aire libre' : b.pisos + (b.pisos > 1 ? ' niveles' : ' nivel') + (b.ascensor ? ' · tiene ascensor' : '')}${lugar ? ' · <b>' + esc(lugar) + (b.plaza ? '' : ', ' + nomNivel(id, piso)) + '</b>' : ''}</p>
+    <div class="fila"><button class="btn pri" data-act="irsel">Llévame</button>${b.pisos > 1 ? `<button class="btn" data-act="pisos">${despiece && despiece.id === id ? 'Cerrar pisos' : 'Ver pisos'}</button>` : ''}</div>
+    ${niveles}
+    <h3>Eventos aquí</h3>${evs.length ? evs.map(e => tarjetaEvento(e)).join('') : '<p class="sub">No hay eventos programados en este lugar.</p>'}`);
+}
+function seleccionarBloque(id, piso, lugar, conPisos) {
+  marcarTab('mapa'); const inf = B3D[id];
+  if (despiece && despiece.id !== id) cerrarPisos();
+  if (conPisos && verPisos(id, piso, lugar)) { /* la cámara la mueve verPisos */ }
+  else volar(V(inf.c[0], inf.c[1], altoBloque(id) / 2), Math.max(70, (inf.radio + 8) / (Math.tan(camera.fov * Math.PI / 360) * camera.aspect)), 0.9);
+  panelBloque(id, piso, lugar);
+}
+
+function panelEventos() {
+  const origen = agenda.actualizado ? `Agenda Universitaria UCB · actualizada ${esc(agenda.actualizado)}` : 'Eventos de ejemplo (no se pudo leer la agenda)';
+  const con = EVENTOS.map(e => ({ e, k: estadoEvento(e).k })).filter(o => o.k !== 'fin');
+  const F = { todos: ['Todos', () => true], vivo: ['En curso', o => o.k === 'vivo'], hoy: ['Hoy', o => o.k === 'vivo' || o.k === 'hoy'], prox: ['Próximos', o => o.k === 'prox'] };
+  const lista = con.filter(F[estado.filtroEv][1]);
+  abrir(`<h2>Eventos en el campus</h2><p class="sub">${origen}</p>
+    <div class="seg">${Object.keys(F).map(k => `<button data-act="filtro" data-f="${k}" class="${estado.filtroEv === k ? 'on' : ''}">${F[k][0]} · ${con.filter(F[k][1]).length}</button>`).join('')}</div>
+    ${lista.length ? lista.map(o => tarjetaEvento(o.e)).join('') : '<p class="sub" style="margin-top:12px">No hay eventos en este filtro.</p>'}`);
+}
+function panelCerca() {
+  const l = EVENTOS.filter(e => BLOQUES[e.bloque]).map(e => ({ e, r: calcRuta(BLOQUES[e.bloque].puerta, e.piso) })).filter(o => o.r).sort((a, b) => a.r.metros - b.r.metros);
+  const desde = estado.origen === 'gps' ? 'tu ubicación GPS' : (NODOS[estado.origen].n || '').replace(/^(el|la|las) /, '');
+  abrir(`<h2>Cerca de ti</h2><p class="sub">Ordenado por cercanía desde <b>${esc(desde)}</b>. ${estado.origen === 'gps' ? '' : 'Activa el GPS o cambia "Estoy en…".'}</p>
+    ${l.map(o => tarjetaEvento(o.e, `<span class="tag azul">${fmtMin(o.r.seg)} min</span>`)).join('')}`);
+}
+
+function irA(dest) {   // dest: { bloque, piso, lugar }
+  const b = BLOQUES[dest.bloque], r = calcRuta(b.puerta, dest.piso);
+  if (!r) { toast(estado.accesible ? 'No hay una ruta sin gradas hasta ahí. Quita "Evitar gradas" o entra por un ingreso vehicular.' : 'No encontré un camino hasta ahí'); estado.accesible = false; return; }
+  const d = { bloque: dest.bloque, piso: dest.piso || 0, lugar: dest.lugar, nombreLugar: b.nombre, nodoNombre: NODOS[b.puerta].n, plaza: b.plaza };
+  estado.ruta = { dest, r }; estado.llegado = null; marcarTab('mapa');
+  if (despiece) cerrarPisos();
+  dibujarRuta(r.pts, 0);
+  // encuadra toda la ruta en la franja visible (entre la barra superior y el panel)
+  const POLAR = 0.6, ca = Math.cos(AZIMUT), sa = Math.sin(AZIMUT), tv = Math.tan(camera.fov * Math.PI / 360);
+  const cx = (Math.max(...r.pts.map(p => p[0])) + Math.min(...r.pts.map(p => p[0]))) / 2;
+  const cy = (Math.max(...r.pts.map(p => p[1])) + Math.min(...r.pts.map(p => p[1]))) / 2;
+  // mide la ruta en los ejes de la pantalla (la cámara está girada AZIMUT)
+  const us = r.pts.map(p => (p[0] - cx) * ca - (p[1] - cy) * sa), ws = r.pts.map(p => (p[0] - cx) * sa + (p[1] - cy) * ca);
+  const du = Math.max(...us) - Math.min(...us), dw = Math.max(...ws) - Math.min(...ws);
+  const dist = Math.max(80, (du / 2 + 9) / (tv * camera.aspect), (dw * Math.cos(POLAR) / 2 + 10) / (tv * 0.4));
+  volar(V(cx, cy, 0), Math.min(560, dist), POLAR, AZIMUT);
+  const cajas = [`<div><b>${fmtMin(r.seg)} min</b><small>${Math.round(r.metros)} m caminando</small></div>`,
+    `<div><b>${r.gradas}</b><small>${r.gradas === 1 ? 'escalera' : 'escaleras'} en el camino</small></div>`];
+  cajas.push(r.pisosSubir ? `<div><b>+${r.pisosSubir}</b><small>${r.pisosSubir === 1 ? 'piso' : 'pisos'} que subir</small></div>`
+    : r.rampas ? `<div><b>${r.rampas}</b><small>${r.rampas === 1 ? 'rampa' : 'rampas'}</small></div>`
+    : `<div><b>PB</b><small>planta baja</small></div>`);
+  const pasos = generarPasos(r, d), tit = !dest.lugar || dest.lugar === b.nombre ? b.nombre : /^bloque/i.test(dest.lugar) ? dest.lugar : `${dest.lugar} · ${b.nombre.split(' · ')[0]}`;
+  abrir(`<h2>Ruta a ${esc(tit)}</h2><p class="sub">Desde ${esc(r.origenNombre.replace(/^(el|la|las) /, ''))}${r.pisosSubir ? ' · destino en ' + nomNivel(dest.bloque, d.piso) : ''}${estado.accesible ? ' · ruta sin gradas' : ''}</p>
+    <div class="stats">${cajas.join('')}</div>
+    <ol class="pasos">${pasos.map(p => `<li>${esc(p)}</li>`).join('')}</ol>
+    <div class="fila">${b.pisos > 1 ? '<button class="btn azul" data-act="pisosruta">Ver pisos</button>' : ''}<button class="btn azul" data-act="camara"><svg class="ico mi"><use href="#i-camara"/></svg>Con cámara</button><button class="btn" data-act="fin">Terminar</button></div>
+    <label class="acc"><input type="checkbox" data-act="acc" ${estado.accesible ? 'checked' : ''}> Evitar gradas (silla de ruedas, carga)</label>`, true);
+}
+function recalcular() { if (AR.on) { AR.paso = 1; arCalcular(); }
+  if (estado.ruta && sheet.classList.contains('open') && estado.tab === 'mapa') irA(estado.ruta.dest); else if (estado.tab === 'cerca') panelCerca(); else if (estado.tab === 'horario') panelHorario(); }
+
+// Acciones del panel
+cuerpo.addEventListener('click', e => {
+  const t = e.target.closest('[data-act]'); if (!t) return;
+  const ev = t.dataset.ev && EVENTOS.find(x => x.id === t.dataset.ev), a = t.dataset.act;
+  if (a === 'ir') irA({ bloque: ev.bloque, piso: ev.piso, lugar: ev.lugar });
+  else if (a === 'ver') { limpiarRuta(); estado.ruta = null; seleccionarBloque(ev.bloque, ev.piso, ev.lugar, ev.piso > 0); }
+  else if (a === 'irsel') irA(estado.sel);
+  else if (a === 'volver') { selCampus.value = 'obrajes'; elegirCampus('obrajes'); }
+  else if (a === 'nivel') { const i = +t.dataset.i, b = estado.sel.bloque; verPisos(b, i, null); panelBloque(b, i, estado.sel.lugar); }
+  else if (a === 'acc') { estado.accesible = t.checked; recalcular(); }
+  else if (a === 'pisos') { const s = estado.sel; if (t.textContent === 'Cerrar pisos') { cerrarPisos(); t.textContent = 'Ver pisos'; } else { verPisos(s.bloque, s.lugar ? s.piso : null, s.lugar); t.textContent = 'Cerrar pisos'; } }
+  else if (a === 'pisosruta') { const d = estado.ruta.dest; if (t.textContent === 'Cerrar pisos') { cerrarPisos(); t.textContent = 'Ver pisos'; } else { verPisos(d.bloque, d.piso, d.lugar); t.textContent = 'Cerrar pisos'; } }
+  else if (a === 'fin') { limpiarRuta(); estado.ruta = null; cerrarPisos(); cerrar(); vistaGeneral(true); }
+  else if (a === 'irclase') { const c = horario.find(x => x.id == t.dataset.id); if (c) irA({ bloque: c.bloque, piso: c.piso, lugar: 'Aula ' + c.aula }); }
+  else if (a === 'delclase') { horario = horario.filter(x => x.id != t.dataset.id); guardarHorario(); panelHorario(); }
+  else if (a === 'ejemplo') { horario = HORARIO_EJEMPLO.map((c, i) => Object.assign({ id: Date.now() + i }, c)); guardarHorario(); panelHorario(); }
+  else if (a === 'ics') descargarICS();
+  else if (a === 'comp') compartir(ev);
+  else if (a === 'filtro') { estado.filtroEv = t.dataset.f; panelEventos(); }
+  else if (a === 'camara') arAbrir();
+  else if (a === 'resultado') { limpiarRuta(); estado.ruta = null; const piso = t.dataset.p === '' ? null : +t.dataset.p; seleccionarBloque(t.dataset.b, piso, t.dataset.l || null, piso != null && piso > 0); }
+  else if (a === 'sug') { const i = $('#inBusca'); i.value = t.textContent; i.oninput(); }
+  else if (a === 'qrAqui') fijarOrigen($('#selQR').value, 'Ubicación fijada por QR');
+  else if (a === 'qrImp') imprimirQR();
+  else if (a === 'delEv') { propios = propios.filter(x => x.id !== t.dataset.id); guardarPropios(); panelAdmin(); }
+  else if (a === 'expEv') exportarEventos();
+});
+$('#sheetClose').onclick = () => { cerrar(); if (campusActual === 'obrajes') marcarTab('mapa'); };
+$('#tabs').addEventListener('click', e => {
+  const b = e.target.closest('button'); if (!b) return; const t = b.dataset.tab; marcarTab(t);
+  if (t === 'mapa') { cerrar(); cerrarPisos(); vistaGeneral(true); }
+  else if (t === 'eventos') panelEventos(); else if (t === 'cerca') panelCerca(); else if (t === 'camara') arAbrir(); else panelHorario();
+});
+
+// Selector "Estoy en…"
+const sel = $('#selOrigen');
+const ORIGENES = [['ing', 'Ingreso principal']].concat(Object.keys(BLOQUES).map(k => [BLOQUES[k].puerta, BLOQUES[k].nombre]),
+  [['v1', 'Ingreso vehicular este (norte)'], ['v2', 'Ingreso vehicular este (sur)'], ['v3', 'Ingreso vehicular oeste']]);
+sel.innerHTML = '<option value="gps" hidden>Mi ubicación (GPS)</option>' + ORIGENES.map(o => `<option value="${o[0]}">${esc(o[1])}</option>`).join('');
+sel.value = 'ing';
+sel.onchange = () => { estado.origen = sel.value; if (sel.value !== 'gps') $('#btnGps').classList.remove('on'); recalcular(); };
+
+// Toque sobre un bloque
+const rayo = new THREE.Raycaster(); let pd = null;
+canvas.addEventListener('pointerdown', e => pd = { x: e.clientX, y: e.clientY, t: performance.now() });
+canvas.addEventListener('pointerup', e => {
+  if (!pd || Math.hypot(e.clientX - pd.x, e.clientY - pd.y) > 8 || performance.now() - pd.t > 500) return;
+  const w = window.innerWidth, h = window.innerHeight;
+  rayo.setFromCamera(new THREE.Vector2(e.clientX / w * 2 - 1, -((e.clientY + desfase) / h) * 2 + 1), camera);
+  const hit = campusActual === 'obrajes' && rayo.intersectObjects(clicables, false)[0];
+  if (hit) { const id = hit.object.userData.bloque; seleccionarBloque(id); }
+});
+
+/* =====================================================================
+   GPS  (transformación afín lat/lng → plano con 3 puntos de calibración)
+   ===================================================================== */
+let vigia = null;
+const GEO = (function () {
+  const lat0 = -16.5228, lng0 = -68.1118, kx = 111320 * Math.cos(lat0 * Math.PI / 180), ky = 110540;   // metros por grado
+  const filas = REFERENCIAS_GPS.filter(r => typeof r.lat === 'number' && typeof r.lng === 'number').map(r => {
+    let x, y;
+    if (typeof r.de === 'string') { x = NODOS[r.de].x; y = NODOS[r.de].y; }
+    else { const vs = [].concat(...r.de.map(k => BLOQUES[k].poli)); x = vs.reduce((t, v) => t + v[0], 0) / vs.length; y = vs.reduce((t, v) => t + v[1], 0) / vs.length; }
+    return { x, y, e: (r.lng - lng0) * kx, n: (r.lat - lat0) * ky };
+  });
+  if (filas.length < 3) return null;
+  // mínimos cuadrados:  este = a·x + b·y + c   ·   norte = d·x + f·y + g   (en metros)
+  const resolver = campo => {
+    const M = [[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]];
+    filas.forEach(q => { const v = [q.x, q.y, 1]; for (let i = 0; i < 3; i++) { M[i][3] += v[i] * q[campo]; for (let j = 0; j < 3; j++) M[i][j] += v[i] * v[j]; } });
+    for (let i = 0; i < 3; i++) {
+      let piv = i; for (let j = i + 1; j < 3; j++) if (Math.abs(M[j][i]) > Math.abs(M[piv][i])) piv = j;
+      const tmp = M[i]; M[i] = M[piv]; M[piv] = tmp;
+      if (Math.abs(M[i][i]) < 1e-9) return null;
+      for (let j = 0; j < 3; j++) if (j !== i) { const k = M[j][i] / M[i][i]; for (let c = i; c < 4; c++) M[j][c] -= k * M[i][c]; }
+    }
+    return M.map((r, i) => r[3] / r[i]);
+  };
+  const E = resolver('e'), N = resolver('n'); if (!E || !N) return null;
+  const det = E[0] * N[1] - E[1] * N[0]; if (Math.abs(det) < 1e-9) return null;
+  return {
+    aPlano(lat, lng) { const e = (lng - lng0) * kx - E[2], n = (lat - lat0) * ky - N[2]; return { x: (e * N[1] - E[1] * n) / det, y: (E[0] * n - e * N[0]) / det }; },
+    aGps(x, y) { return { lat: lat0 + (N[0] * x + N[1] * y + N[2]) / ky, lng: lng0 + (E[0] * x + E[1] * y + E[2]) / kx }; },
+    rumbo(dx, dy) { return (Math.atan2(E[0] * dx + E[1] * dy, N[0] * dx + N[1] * dy) * 180 / Math.PI + 360) % 360; },   // 0 = norte, 90 = este
+    error: Math.sqrt(filas.reduce((t, q) => t + Math.pow(E[0] * q.x + E[1] * q.y + E[2] - q.e, 2) + Math.pow(N[0] * q.x + N[1] * q.y + N[2] - q.n, 2), 0) / filas.length),
+  };
+})();
+// Rumbo de brújula de un vector del plano. Sin calibración se asume que el plano mira al norte.
+const rumboPlano = (dx, dy) => GEO ? GEO.rumbo(dx, dy) : (Math.atan2(dx, -dy) * 180 / Math.PI + 360) % 360;
+function revisarLlegada(p) {
+  const d = estado.ruta && estado.ruta.dest; if (!d || estado.origen !== 'gps') return;
+  const n = NODOS[BLOQUES[d.bloque].puerta], clave = d.bloque + '|' + (d.lugar || '');
+  if (estado.llegado !== clave && Math.hypot(n.x - p.x, n.y - p.y) * MPU < RADIO_LLEGADA) {
+    estado.llegado = clave; toast('Llegaste a ' + (d.lugar || BLOQUES[d.bloque].nombre) + (d.piso ? ' · sube a ' + nomNivel(d.bloque, d.piso) : ''));
+  }
+}
+function alPosicion(pos) {
+  const p = GEO.aPlano(pos.coords.latitude, pos.coords.longitude), dentro = p.x > -4 && p.x < 104 && p.y > -4 && p.y < 92;
+  if (!dentro) { gpsG.visible = false; estado.gps = null; if (estado.origen === 'gps') { modoManual('Estás fuera del campus: elige dónde estás en "Estoy en…"'); } return; }
+  const primero = !estado.gps; estado.gps = p; gpsG.position.copy(V(p.x, p.y, 0)); gpsG.visible = true;
+  if (primero) { estado.origen = 'gps'; sel.value = 'gps'; $('#btnGps').classList.add('on'); const cerca = NODOS[Object.keys(NODOS).filter(k => NODOS[k].n).reduce((a, b) => Math.hypot(NODOS[a].x - p.x, NODOS[a].y - p.y) < Math.hypot(NODOS[b].x - p.x, NODOS[b].y - p.y) ? a : b)].n;
+    toast('Estás cerca de ' + cerca.replace(/^(el|la|las) /, '') + ' · GPS ±' + Math.round(pos.coords.accuracy || 0) + ' m'); recalcular(); }
+  else if (estado.origen === 'gps' && estado.tab !== 'mapa') recalcular();
+  revisarLlegada(p);
+  if (AR.on) arCalcular();
+}
+function modoManual(msg) { if (estado.origen === 'gps') { estado.origen = 'ing'; sel.value = 'ing'; } $('#btnGps').classList.remove('on'); if (msg) toast(msg); recalcular(); }
+function activarGPS() {
+  if (!GEO) return modoManual('GPS sin calibrar todavía: elige tu ubicación en "Estoy en…"');
+  if (!navigator.geolocation) return modoManual('Este dispositivo no tiene GPS: elige tu ubicación manualmente');
+  if (estado.gps) { estado.origen = 'gps'; sel.value = 'gps'; $('#btnGps').classList.add('on'); recalcular(); return; }
+  toast('Buscando tu ubicación…');
+  if (vigia == null) vigia = navigator.geolocation.watchPosition(alPosicion, () => { navigator.geolocation.clearWatch(vigia); vigia = null; modoManual('No pude obtener tu ubicación: elige dónde estás manualmente'); },
+    { enableHighAccuracy: true, maximumAge: 4000, timeout: 15000 });
+}
+$('#btnGps').onclick = activarGPS;
+
+/* =====================================================================
+   MI HORARIO  (localStorage + recordatorio .ics)
+   ===================================================================== */
+const CLAVE = 'ucb3d_horario';
+let horario = []; try { horario = JSON.parse(localStorage.getItem(CLAVE)) || []; } catch (e) { }
+function guardarHorario() { try { localStorage.setItem(CLAVE, JSON.stringify(horario)); } catch (e) { } }
+function proximaFecha(c, ahora) {
+  const [h, m] = c.hora.split(':').map(Number), d = new Date(ahora); d.setHours(h, m, 0, 0);
+  d.setDate(d.getDate() + ((c.dia - d.getDay() + 7) % 7)); if (d <= ahora) d.setDate(d.getDate() + 7); return d;
+}
+function proximaClase() {
+  const ahora = new Date(); let mejor = null;
+  horario.forEach(c => { const f = proximaFecha(c, ahora); if (!mejor || f < mejor.inicio) mejor = { c, inicio: f }; });
+  if (!mejor) return null;
+  const r = calcRuta(BLOQUES[mejor.c.bloque].puerta, mejor.c.piso), min = r ? fmtMin(r.seg) : 5;
+  mejor.viaje = min; mejor.metros = r ? r.metros : 0; mejor.salida = new Date(mejor.inicio - (min + MARGEN_MIN) * 60000); return mejor;
+}
+const hhmm = d => String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0');
+function panelHorario() {
+  const p = proximaClase(), hoy = new Date();
+  let prox = '<p class="sub">Agrega tus clases y te digo a qué hora salir para llegar a tiempo.</p>';
+  if (p) { const dif = Math.round((new Date(p.inicio).setHours(0, 0, 0, 0) - new Date(hoy).setHours(0, 0, 0, 0)) / 864e5), cuando = dif === 0 ? 'hoy' : dif === 1 ? 'mañana' : 'el ' + DIAS[p.inicio.getDay()].toLowerCase();
+    prox = `<div class="prox"><small>Tu próxima clase · ${cuando} ${hhmm(p.inicio)}</small><b>${esc(p.c.materia)}</b>
+      <small>Aula ${esc(p.c.aula)} · ${esc(BLOQUES[p.c.bloque].nombre.split(' · ')[0])} · ${nomNivel(p.c.bloque, p.c.piso)} · ${p.viaje} min de camino + ${MARGEN_MIN} de margen</small>
+      <div class="sal">Sal a las ${hhmm(p.salida)}</div>
+      <div class="fila"><button class="btn pri" data-act="irclase" data-id="${p.c.id}">Llévame</button><button class="btn" data-act="ics"><svg class="ico mi"><use href="#i-alarma"/></svg>Recordatorio</button></div></div>`; }
+  const lista = horario.slice().sort((a, b) => a.dia - b.dia || a.hora.localeCompare(b.hora)).map(c => `<div class="clase"><div><b>${esc(c.materia)}</b><br>${DIAS[c.dia]} ${c.hora} · Aula ${esc(c.aula)} · ${esc(BLOQUES[c.bloque].nombre.split(' · ')[0])}, ${nomNivel(c.bloque, c.piso)}</div>
+      <button data-act="irclase" data-id="${c.id}" aria-label="Cómo llegar"><svg class="ico"><use href="#i-ir"/></svg></button><button data-act="delclase" data-id="${c.id}" aria-label="Quitar"><svg class="ico"><use href="#i-quitar"/></svg></button></div>`).join('');
+  abrir(`<h2>Mi horario</h2>${prox}
+    <h3>Agregar clase</h3>
+    <form class="form" id="fClase">
+      <input class="w2" name="materia" placeholder="Materia (ej. ECO-132 Contabilidad)" required>
+      <select name="dia">${[1, 2, 3, 4, 5, 6].map(d => `<option value="${d}" ${d === hoy.getDay() ? 'selected' : ''}>${DIAS[d]}</option>`).join('')}</select>
+      <input name="hora" type="time" value="07:15" required>
+      <input name="aula" placeholder="Aula (ej. D5)" required>
+      <select name="bloque">${Object.keys(BLOQUES).filter(k => BLOQUES[k].pisos > 0 && k !== 'CAP').map(k => `<option value="${k}">${esc(BLOQUES[k].nombre.split(' · ')[0])}</option>`).join('')}</select>
+      <select name="piso"></select>
+      <button class="btn azul" type="submit">Guardar clase</button>
+    </form>
+    ${horario.length ? '<h3>Mis clases</h3>' + lista : '<div class="fila"><button class="btn" data-act="ejemplo">Cargar horario de ejemplo</button></div>'}`);
+  const f = $('#fClase');
+  const pintarNiveles = () => { const b = BLOQUES[f.bloque.value]; f.piso.innerHTML = b.niveles.map((n, i) => `<option value="${i}">${esc(n.n)}</option>`).join(''); };
+  pintarNiveles(); f.bloque.onchange = pintarNiveles;
+  f.aula.oninput = () => {   // "D5" o "F9" elige el bloque y, si el aula aparece en un nivel, también el piso
+    const u = ubicarAula(f.aula.value); if (!u) return;
+    f.bloque.value = u.bloque; pintarNiveles(); if (u.piso != null) f.piso.value = u.piso;
+  };
+  f.onsubmit = e => { e.preventDefault();
+    const b = f.bloque.value, piso = Math.min(BLOQUES[b].pisos - 1, Math.max(0, parseInt(f.piso.value, 10) || 0));
+    horario.push({ id: Date.now(), materia: f.materia.value.trim(), dia: +f.dia.value, hora: f.hora.value, bloque: b, piso, aula: f.aula.value.trim().toUpperCase() });
+    guardarHorario(); panelHorario(); toast('Clase guardada'); };
+}
+// Guarda un archivo. Dentro del visor de artifacts hay que pedirlo por la capacidad "downloads";
+// en un sitio normal (Netlify, GitHub Pages, servidor propio) basta con un enlace.
+async function guardarArchivo(nombre, texto, tipo) {
+  try {
+    const d = window.claude && window.claude.use ? await window.claude.use('downloads') : null;
+    if (d) { await d.save({ filename: nombre, data: texto }); return; }
+  } catch (e) { /* si falla, usamos el enlace de abajo */ }
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([texto], { type: tipo }));
+  a.download = nombre; document.body.appendChild(a); a.click(); a.remove();
+}
+async function descargarICS() {
+  const p = proximaClase(); if (!p) return;
+  const f = d => d.getFullYear() + String(d.getMonth() + 1).padStart(2, '0') + String(d.getDate()).padStart(2, '0') + 'T' + String(d.getHours()).padStart(2, '0') + String(d.getMinutes()).padStart(2, '0') + '00';
+  const fin = new Date(p.inicio.getTime() + 90 * 60000), antes = p.viaje + MARGEN_MIN + ALARMA_MIN, t = s => String(s).replace(/([,;\\])/g, '\\$1');
+  const ics = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//UbiCato//ES', 'CALSCALE:GREGORIAN', 'BEGIN:VEVENT',
+    'UID:' + p.c.id + '-' + f(p.inicio) + '@ucb3d', 'DTSTAMP:' + f(new Date()), 'DTSTART:' + f(p.inicio), 'DTEND:' + f(fin), 'RRULE:FREQ=WEEKLY',
+    'SUMMARY:' + t(p.c.materia + ' · Aula ' + p.c.aula), 'LOCATION:' + t(BLOQUES[p.c.bloque].nombre + ', ' + nomNivel(p.c.bloque, p.c.piso) + ', UCB La Paz'),
+    'DESCRIPTION:' + t('Sal a las ' + hhmm(p.salida) + ' (' + p.viaje + ' min de camino + ' + MARGEN_MIN + ' de margen). UbiCato'),
+    'BEGIN:VALARM', 'ACTION:DISPLAY', 'DESCRIPTION:' + t('En 10 min sal hacia ' + p.c.materia + ' (Aula ' + p.c.aula + ')'), 'TRIGGER:-PT' + antes + 'M', 'END:VALARM', 'END:VEVENT', 'END:VCALENDAR'].join('\r\n');
+  window.__ultimoICS = ics;
+  await guardarArchivo('ubicato-' + p.c.materia.split(' ')[0].toLowerCase() + '.ics', ics, 'text/calendar;charset=utf-8');
+  toast('Recordatorio descargado: ábrelo para añadirlo a tu calendario');
+}
+
+// Agenda Universitaria: eventos.json lo genera actualizar_agenda.py desde https://agenda.lpz.ucb.edu.bo/
+// (el navegador no puede leer esa página directamente; por eso la sincroniza un script cada hora).
+const agenda = { actualizado: null };
+const EJEMPLOS = EVENTOS.slice();
+let deAgenda = null, extras = [];
+const CLAVE_EV = 'ubicato_eventos_admin';
+let propios = []; try { propios = JSON.parse(localStorage.getItem(CLAVE_EV)) || []; } catch (e) { }
+function guardarPropios() { try { localStorage.setItem(CLAVE_EV, JSON.stringify(propios)); } catch (e) { } recomponer(); }
+// EVENTOS = agenda oficial (o los de ejemplo si no cargó) + eventos_extra.json + los agregados en este dispositivo
+function recomponer() {
+  EVENTOS.length = 0;
+  (deAgenda || EJEMPLOS).concat(extras, propios).forEach(e => { if (!EVENTOS.some(x => x.id === e.id)) EVENTOS.push(e); });
+}
+const leerJSON = url => fetch(url, { cache: 'no-store' }).then(r => r.ok ? r.json() : Promise.reject());
+const cargaAgenda = leerJSON('eventos.json').then(d => {
+  if (!d || !Array.isArray(d.eventos)) return;
+  deAgenda = d.eventos.map(e => { e.agenda = true; if (e.postergado) e.tipo = 'Postergado'; return e; });
+  agenda.actualizado = d.actualizado;
+}).catch(() => { /* sin agenda: quedan los eventos de ejemplo */ });
+// eventos_extra.json: eventos que no están en la agenda oficial y se mantienen a mano (mismo formato)
+const cargaExtras = leerJSON('eventos_extra.json').then(d => { if (d && Array.isArray(d.eventos)) extras = d.eventos.filter(e => e && e.id && e.titulo); }).catch(() => { });
+recomponer();
+Promise.all([cargaAgenda, cargaExtras]).then(() => {
+  recomponer();
+  if (estado.tab === 'eventos') panelEventos(); else if (estado.tab === 'cerca') panelCerca();
+  leerEnlace();
+});
+
+/* =====================================================================
+   ENLACES Y PUNTOS QR
+   ?desde=<nodo>  fija dónde estás (es lo que lleva el QR pegado en cada punto del campus)
+   ?ir=<id de evento>  o  ?bloque=D&piso=5&lugar=Paraninfo  abre la app ya con la ruta trazada
+   ===================================================================== */
+function enlace(params) {
+  const u = new URL(location.href); u.search = ''; u.hash = '';
+  Object.keys(params).forEach(k => { if (params[k] != null && params[k] !== '') u.searchParams.set(k, params[k]); });
+  return u.toString();
+}
+function aObrajes() { if (campusActual !== 'obrajes') { selCampus.value = 'obrajes'; elegirCampus('obrajes'); } }
+function fijarOrigen(id, msg) {
+  if (!NODOS[id]) return;
+  estado.origen = id; sel.value = id; $('#btnGps').classList.remove('on');
+  const o = ORIGENES.find(x => x[0] === id); toast(msg + ': ' + (o ? o[1] : NODOS[id].n || id));
+  if (estado.ruta) irA(estado.ruta.dest); else { cerrar(); marcarTab('mapa'); }
+}
+function leerEnlace() {
+  const q = new URLSearchParams(location.search), d = q.get('desde'), ir = q.get('ir'), bl = q.get('bloque');
+  if (d && ORIGENES.some(o => o[0] === d)) fijarOrigen(d, 'Ubicación fijada por QR');
+  const ev = ir && EVENTOS.find(e => e.id === ir);
+  if (ev && BLOQUES[ev.bloque]) irA({ bloque: ev.bloque, piso: ev.piso, lugar: ev.lugar });
+  else if (bl && BLOQUES[bl]) irA({ bloque: bl, piso: Math.max(0, Math.min(BLOQUES[bl].niveles.length - 1, parseInt(q.get('piso'), 10) || 0)), lugar: q.get('lugar') || null });
+  else if (ev) { marcarTab('eventos'); panelEventos(); }
+}
+async function compartir(ev) {
+  if (!ev) return;
+  const url = enlace({ ir: ev.id, bloque: ev.bloque, piso: ev.piso, lugar: ev.lugar }), texto = `${ev.titulo} · ${fechaEvento(ev)} · ${ev.lugar}`;
+  try {
+    if (navigator.share) { await navigator.share({ title: ev.titulo, text: texto, url }); return; }
+    await navigator.clipboard.writeText(texto + '\n' + url); toast('Enlace copiado: al abrirlo, la ruta ya sale trazada');
+  } catch (e) { if (!e || e.name !== 'AbortError') toast('No se pudo compartir en este navegador'); }
+}
+function svgQR(url) {
+  const q = qrcode(0, 'M'); q.addData(url); q.make();
+  return q.createSvgTag({ cellSize: 4, margin: 8, scalable: true });
+}
+function pintarQR() {
+  const id = $('#selQR').value, url = enlace({ desde: id }), o = ORIGENES.find(x => x[0] === id);
+  $('#qrNom').textContent = o[1]; $('#qrUrl').textContent = url;
+  try { $('#qrImg').innerHTML = svgQR(url); } catch (e) { $('#qrImg').textContent = 'No se pudo generar el QR (sin conexión)'; }
+}
+function panelQR() {
+  aObrajes(); marcarTab('');
+  const actual = estado.origen !== 'gps' ? estado.origen : 'ing';
+  abrir(`<h2>Puntos QR del campus</h2><p class="sub">Cada punto lleva pegado su código. Quien lo escanea abre UbiCato sabiendo dónde está, sin GPS.</p>
+    <select class="busca" id="selQR" aria-label="Punto QR">${ORIGENES.map(o => `<option value="${o[0]}" ${o[0] === actual ? 'selected' : ''}>${esc(o[1])}</option>`).join('')}</select>
+    <div class="qrcaja"><div class="qr" id="qrImg"></div><div><b id="qrNom"></b><small id="qrUrl"></small></div></div>
+    <div class="fila"><button class="btn pri" data-act="qrAqui">Estoy en este punto</button><button class="btn" data-act="qrImp">Imprimir todos</button></div>
+    <p class="nota">El código lleva la dirección donde está publicada la app. Si la app cambia de dirección, hay que volver a imprimirlos.</p>`);
+  $('#selQR').onchange = pintarQR; pintarQR();
+}
+function imprimirQR() {
+  let hojas;
+  try { hojas = ORIGENES.map(o => `<div class="p"><div class="q">${svgQR(enlace({ desde: o[0] }))}</div><h2>${esc(o[1])}</h2><p>Escanea para saber cómo llegar a cualquier evento desde aquí</p><small>UbiCato · UCB La Paz</small></div>`).join(''); }
+  catch (e) { return toast('No se pudo generar los QR (sin conexión)'); }
+  const w = window.open('', '_blank'); if (!w) return toast('El navegador bloqueó la ventana de impresión');
+  w.document.write(`<!DOCTYPE html><html lang="es"><head><meta charset="utf-8"><title>Puntos QR · UbiCato</title><style>body{font-family:system-ui,sans-serif;margin:0;color:#161b33}
+    .p{width:50%;float:left;box-sizing:border-box;padding:9mm;text-align:center;page-break-inside:avoid;border:1px dashed #c5cad8}.q svg{width:62mm;height:62mm}
+    h2{margin:2mm 0 1mm;color:#1e2a78;font-size:16pt}p{margin:0;font-size:10pt}small{color:#6b7287}</style></head><body>${hojas}</body></html>`);
+  w.document.close(); w.focus(); setTimeout(() => w.print(), 300);
+}
+$('#btnQR').onclick = panelQR;
+
+/* =====================================================================
+   BUSCADOR  (aulas, oficinas y servicios de todos los bloques, y eventos)
+   ===================================================================== */
+const llano = t => String(t).normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+// "D17", "c-201" o "F9" → { bloque, piso }. piso = null si el bloque existe pero el aula no figura en ningún nivel.
+function ubicarAula(txt) {
+  const v = String(txt || '').trim().toUpperCase().replace(/[\s-]/g, ''), m = v.match(/^([A-L])\d/); if (!m) return null;
+  const letra = m[1], num = parseInt(v.slice(1), 10), cands = (letra === 'G' ? ['G2', 'G1'] : letra === 'F' ? ['F1', 'F2'] : [letra]).filter(k => BLOQUES[k] && BLOQUES[k].pisos > 0);
+  for (const k of cands) {
+    let piso = null;
+    BLOQUES[k].niveles.forEach((n, i) => n.items.forEach(it => {
+      const limpio = it.toUpperCase().replace(/[^A-Z0-9]+/g, ' '), r = limpio.match(new RegExp('\\b' + letra + '0*([0-9]+) ' + letra + '0*([0-9]+)\\b'));
+      if (piso === null && ((r && num >= +r[1] && num <= +r[2]) || limpio.split(' ').indexOf(v) >= 0)) piso = i;
+    }));
+    if (piso !== null) return { bloque: k, piso };
+  }
+  return cands.length ? { bloque: cands[0], piso: null } : null;
+}
+const INDICE = [];
+Object.keys(BLOQUES).forEach(id => { const b = BLOQUES[id];
+  INDICE.push({ t: b.nombre, bloque: id, piso: null, lugar: null });
+  b.niveles.forEach((n, i) => n.items.forEach(it => INDICE.push({ t: it, bloque: id, piso: b.plaza ? null : i, lugar: it }))); });
+function buscar(q) {
+  const k = llano(q).trim(), res = []; if (!k) return res;
+  const a = ubicarAula(q);
+  if (a) res.push({ t: 'Aula ' + q.trim().toUpperCase(), bloque: a.bloque, piso: a.piso, lugar: 'Aula ' + q.trim().toUpperCase() });
+  INDICE.forEach(r => { if (llano(r.t).indexOf(k) >= 0 && res.length < 14) res.push(r); });
+  EVENTOS.forEach(e => { if (BLOQUES[e.bloque] && llano(e.titulo).indexOf(k) >= 0 && res.length < 18) res.push({ t: e.titulo, bloque: e.bloque, piso: e.piso, lugar: e.lugar, ev: true }); });
+  return res;
+}
+function panelBuscar() {
+  aObrajes(); marcarTab('');
+  abrir(`<h2>Buscar en el campus</h2><input class="busca" id="inBusca" type="search" placeholder="Aula, oficina o servicio (D17, Kardex, Caja…)" autocomplete="off">
+    <div id="resBusca"></div>`);
+  const i = $('#inBusca'), caja = $('#resBusca');
+  i.oninput = () => {
+    const q = i.value, res = buscar(q);
+    if (!q.trim()) { caja.innerHTML = '<h3>Lo más buscado</h3><div class="chips">' + ['Kardex', 'Caja', 'Biblioteca', 'Cafetería', 'Centro Médico', 'Paraninfo', 'Coliseo', 'Admisión'].map(x => `<span data-act="sug">${x}</span>`).join('') + '</div>'; return; }
+    caja.innerHTML = res.length ? res.map(r => { const b = BLOQUES[r.bloque];
+      return `<div class="res" data-act="resultado" data-b="${r.bloque}" data-p="${r.piso == null ? '' : r.piso}" data-l="${esc(r.lugar || '')}"><svg class="ico"><use href="#${r.ev ? 'i-eventos' : 'i-cerca'}"/></svg><div><b>${esc(r.t)}</b><small>${esc(b.nombre)}${b.plaza || r.piso == null ? '' : ' · ' + nomNivel(r.bloque, r.piso)}${r.ev ? ' · evento' : ''}</small></div><svg class="ico"><use href="#i-ir"/></svg></div>`; }).join('')
+      : '<p class="sub" style="margin-top:12px">No encontré nada con ese nombre. Prueba con el número de aula (D17) o el nombre de la oficina.</p>';
+  };
+  i.oninput();
+}
+$('#btnBuscar').onclick = panelBuscar;
+
+/* =====================================================================
+   ADMINISTRAR EVENTOS  (los que no están en la agenda oficial)
+   ===================================================================== */
+function panelAdmin() {
+  aObrajes(); marcarTab('');
+  const hoy = new Date(), iso = hoy.getFullYear() + '-' + String(hoy.getMonth() + 1).padStart(2, '0') + '-' + String(hoy.getDate()).padStart(2, '0');
+  abrir(`<h2>Administrar eventos</h2><p class="sub">La Agenda Universitaria se sincroniza sola cada hora. Aquí se agregan los eventos que no figuran en ella.</p>
+    <form class="form" id="fEv">
+      <input class="w2" name="titulo" placeholder="Título del evento" required maxlength="90">
+      <input name="tipo" placeholder="Tipo (Feria, Charla…)" maxlength="24">
+      <input name="lugar" placeholder="Lugar (ej. Aula C201)" required maxlength="60">
+      <select name="bloque" aria-label="Bloque">${Object.keys(BLOQUES).map(k => `<option value="${k}">${esc(BLOQUES[k].nombre.split(' · ')[0])}</option>`).join('')}</select>
+      <select name="piso" aria-label="Piso"></select>
+      <input name="fecha" type="date" value="${iso}" required aria-label="Fecha">
+      <input name="hora" type="time" value="10:00" aria-label="Hora">
+      <button class="btn azul w2" type="submit">Agregar evento</button>
+    </form>
+    <h3>Agregados en este dispositivo</h3>
+    ${propios.length ? propios.map(e => `<div class="clase"><div><b>${esc(e.titulo)}</b><br>${fechaEvento(e)} · ${lugarEvento(e)}</div><button data-act="delEv" data-id="${e.id}" aria-label="Quitar"><svg class="ico"><use href="#i-quitar"/></svg></button></div>`).join('') : '<p class="sub">Todavía no agregaste ninguno.</p>'}
+    <div class="fila"><button class="btn" data-act="expEv">Copiar para publicar (JSON)</button></div>
+    <p class="nota">Lo que agregas aquí se ve solo en este celular. Para que lo vean todos, copia el JSON y pégalo en <b>eventos_extra.json</b>, junto a la app.</p>`);
+  const f = $('#fEv'), niveles = () => { f.piso.innerHTML = BLOQUES[f.bloque.value].niveles.map((n, i) => `<option value="${i}">${esc(n.n || 'Al aire libre')}</option>`).join(''); };
+  niveles(); f.bloque.onchange = niveles;
+  f.lugar.oninput = () => { const u = ubicarAula(f.lugar.value.replace(/^aula\s*/i, '')); if (u) { f.bloque.value = u.bloque; niveles(); if (u.piso != null) f.piso.value = u.piso; } };
+  f.onsubmit = e => { e.preventDefault();
+    propios.push({ id: 'adm' + Date.now(), titulo: f.titulo.value.trim(), tipo: f.tipo.value.trim() || 'Evento', bloque: f.bloque.value, piso: +f.piso.value || 0, lugar: f.lugar.value.trim(),
+      fecha: f.fecha.value, hasta: f.fecha.value, hora: f.hora.value || null, organizador: '', postergado: false });
+    guardarPropios(); panelAdmin(); toast('Evento agregado: ya aparece en Eventos y en el mapa'); };
+}
+async function exportarEventos() {
+  const texto = JSON.stringify({ eventos: extras.concat(propios) }, null, 1);
+  try { await navigator.clipboard.writeText(texto); toast('JSON copiado: pégalo en eventos_extra.json'); }
+  catch (e) { await guardarArchivo('eventos_extra.json', texto, 'application/json'); }
+}
+$('#btnAdmin').onclick = panelAdmin;
+
+/* =====================================================================
+   CÁMARA AR  (flecha sobre la cámara, orientada con la brújula; sin sensores queda en simulación)
+   La cámara lleva su propia copia de la ruta para no mover la maqueta mientras caminas.
+   ===================================================================== */
+const AR = { on: false, stream: null, brujula: false, cruda: 0, ajuste: 0, rumbo: 0, paso: 1, ruta: null, rel: 0, clave: '', claveDest: '' };
+const elAR = $('#ar'), CARDINALES = ['N', 'NE', 'E', 'SE', 'S', 'SO', 'O', 'NO'];
+const sinArticulo = t => String(t || '').replace(/^(el|la|las|los) /, '');
+function arPos() {
+  if (estado.origen === 'gps' && estado.gps) return [estado.gps.x, estado.gps.y];
+  if (AR.ruta) return AR.ruta.pts[Math.min(AR.paso, AR.ruta.pts.length) - 1];
+  const n = NODOS[estado.origen]; return [n.x, n.y];
+}
+const arLlegado = () => !!AR.ruta && (AR.ruta.pts.length < 2 || AR.paso >= AR.ruta.pts.length);
+function arSiguiente() { const r = AR.ruta; for (let i = AR.paso; i < r.pts.length; i++) if (r.nombres[i]) return i; return r.pts.length - 1; }
+function arRestante() {
+  const r = AR.ruta; let ant = arPos(), u = 0, gradas = 0;
+  for (let i = AR.paso; i < r.pts.length; i++) { u += Math.hypot(r.pts[i][0] - ant[0], r.pts[i][1] - ant[1]); ant = r.pts[i]; if (r.tramos[i] === 'e') gradas++; }
+  return { m: u * MPU, seg: u * MPU / VELOCIDAD + gradas * SEG_ESCALERA + r.pisosSubir * SEG_POR_PISO };
+}
+function arCalcular() {
+  const d = estado.ruta && estado.ruta.dest;
+  AR.ruta = d ? calcRuta(BLOQUES[d.bloque].puerta, d.piso) : null;
+  if (estado.origen === 'gps' && AR.ruta) {   // con GPS la ruta se rehace desde donde estás: salta los puntos que ya pisaste
+    AR.paso = 1; const p = arPos();
+    while (AR.paso < AR.ruta.pts.length - 1 && Math.hypot(AR.ruta.pts[AR.paso][0] - p[0], AR.ruta.pts[AR.paso][1] - p[1]) * MPU < 5) AR.paso++;
+    if (Math.hypot(AR.ruta.pts[AR.ruta.pts.length - 1][0] - p[0], AR.ruta.pts[AR.ruta.pts.length - 1][1] - p[1]) * MPU < RADIO_LLEGADA) AR.paso = AR.ruta.pts.length;
+  }
+  AR.clave = ''; arDestinos(); arHud();
+}
+function arDestinos() {
+  const d = estado.ruta && estado.ruta.dest, clave = [estado.origen, estado.accesible, d && d.bloque, d && d.lugar, EVENTOS.length].join('|');
+  if (clave === AR.claveDest) return; AR.claveDest = clave;
+  const vistos = {}, L = [];
+  EVENTOS.forEach(e => { const k = estadoEvento(e).k, c = e.bloque + '|' + e.piso; if (BLOQUES[e.bloque] && k !== 'fin' && k !== 'prox' && !vistos[c]) { vistos[c] = 1; L.push({ dest: { bloque: e.bloque, piso: e.piso, lugar: e.lugar }, t: e.titulo, ev: k }); } });
+  Object.keys(BLOQUES).forEach(id => L.push({ dest: { bloque: id, piso: 0, lugar: null }, t: BLOQUES[id].nombre }));
+  AR.lista = L.map(o => Object.assign(o, { r: calcRuta(BLOQUES[o.dest.bloque].puerta, o.dest.piso) })).filter(o => o.r);
+  $('#arDest').innerHTML = AR.lista.map((o, i) => `<button data-i="${i}" class="${d && d.bloque === o.dest.bloque && (d.lugar || null) === o.dest.lugar ? 'on' : ''}">${o.ev ? `<em>${o.ev === 'vivo' ? 'evento ahora' : 'evento hoy'}</em>` : ''}<b>${esc(o.t)}</b><small>${fmtMin(o.r.seg)} min · ${Math.round(o.r.metros)} m</small></button>`).join('');
+}
+function arHud() {
+  const d = estado.ruta && estado.ruta.dest, r = AR.ruta, sig = $('#arSig'), b = d && BLOQUES[d.bloque];
+  let k, a, inf; sig.hidden = true;
+  if (!d) { k = 'Sin destino'; a = '¿A dónde vas?'; inf = 'Desliza la lista de abajo y elige un lugar o un evento.'; }
+  else if (!r) { k = 'Destino: ' + (d.lugar || b.nombre); a = 'No hay ruta sin gradas'; inf = 'Quita "Evitar gradas" en el panel de la ruta.'; }
+  else if (arLlegado()) { k = 'Llegaste'; a = d.lugar || b.nombre;
+    inf = r.pisosSubir ? `Entra y sube ${r.pisosSubir} piso${r.pisosSubir > 1 ? 's' : ''} ${b.ascensor ? 'por el ascensor o las gradas' : 'por las gradas'} hasta ${nomNivel(d.bloque, d.piso)}.` : 'Estás en el lugar.'; }
+  else { const j = arSiguiente(), ultimo = j === r.pts.length - 1, nom = sinArticulo(ultimo ? (NODOS[b.puerta].n || b.nombre) : r.nombres[j]), q = arRestante();
+    k = 'Destino: ' + (d.lugar || b.nombre); a = 'Hacia ' + nom;
+    inf = `${Math.round(q.m)} m · ${fmtMin(q.seg)} min restantes` + (r.tramos[AR.paso] === 'e' ? ' · vienen gradas' : r.tramos[AR.paso] === 'r' ? ' · por la rampa' : '');
+    if (estado.origen !== 'gps') { sig.hidden = false; sig.textContent = 'Llegué a ' + nom; } }
+  $('#arK').textContent = k; $('#arA').textContent = a; $('#arInfo').textContent = inf;
+  $('#arAviso').textContent = AR.brujula ? 'Si la flecha no coincide, apunta el celular hacia donde vas y toca Calibrar.' : (AR.stream ? 'Este equipo no tiene brújula: arrastra a los lados para girar.' : 'Modo simulación: arrastra a los lados para girar la vista.');
+  $('#arCam').hidden = !!AR.stream; $('#arCal').hidden = !(AR.brujula && r && !arLlegado());
+}
+function arCuadro() {
+  if (!AR.on) return; requestAnimationFrame(arCuadro);
+  const r = AR.ruta, pos = arPos(), H = AR.rumbo, rel = x => ((x - H + 540) % 360) - 180;
+  const clave = [H.toFixed(1), pos[0].toFixed(2), pos[1].toFixed(2), AR.paso, r ? r.pts.length : 0].join('|');
+  if (clave === AR.clave) return; AR.clave = clave;
+  const hay = !!r && !arLlegado(), fl = $('#arFlecha'), giro = $('#arGiro');
+  fl.hidden = giro.hidden = !hay; AR.rel = 0;
+  if (hay) {
+    const p = r.pts[AR.paso], rr = AR.rel = rel(rumboPlano(p[0] - pos[0], p[1] - pos[1])), ok = Math.abs(rr) < 14;
+    fl.style.transform = `perspective(520px) rotateX(58deg) rotate(${rr.toFixed(1)}deg)`; fl.classList.toggle('ok', ok); giro.classList.toggle('ok', ok);
+    giro.textContent = ok ? 'Sigue de frente' : (rr > 0 ? 'Gira a la derecha ' : 'Gira a la izquierda ') + Math.round(Math.abs(rr)) + '°';
+  }
+  $('#arIzq').hidden = !(hay && AR.rel < -40); $('#arDer').hidden = !(hay && AR.rel > 40);
+  $('#arTira').innerHTML = CARDINALES.map((c, i) => { const x = rel(i * 45); return Math.abs(x) < 38 ? `<span style="left:${(50 + x * 1.44).toFixed(1)}%">${c}</span>` : ''; }).join('');
+  const d = estado.ruta && estado.ruta.dest;
+  $('#arRot').innerHTML = Object.keys(B3D).map(id => { const c = B3D[id].c; return { id, m: Math.hypot(c[0] - pos[0], c[1] - pos[1]) * MPU, x: rel(rumboPlano(c[0] - pos[0], c[1] - pos[1])) }; })
+    .filter(o => Math.abs(o.x) < 32 && o.m > 8).sort((a, b) => a.m - b.m).slice(0, 4)
+    .map((o, i) => `<span class="${d && d.bloque === o.id ? 'dest' : ''}" style="left:${Math.min(82, Math.max(18, 50 + o.x * 1.44)).toFixed(1)}%;top:${166 + i * 36}px">${esc(BLOQUES[o.id].nombre.split(' · ').pop())} · ${Math.round(o.m)} m</span>`).join('');
+}
+function alOrientar(e) {
+  let h = null;
+  if (e.webkitCompassHeading != null) h = e.webkitCompassHeading;   // iPhone
+  else if (e.absolute && e.alpha != null && e.beta != null && e.gamma != null) {   // Android: rumbo de la cámara trasera
+    const g = Math.PI / 180, a = e.alpha * g, b = e.beta * g, c = e.gamma * g;
+    h = (Math.atan2(-Math.cos(a) * Math.sin(c) - Math.sin(a) * Math.sin(b) * Math.cos(c), -Math.sin(a) * Math.sin(c) + Math.cos(a) * Math.sin(b) * Math.cos(c)) / g + 360) % 360;
+  }
+  if (h == null || isNaN(h)) return;
+  if (!AR.brujula) { AR.brujula = true; AR.cruda = h; arHud(); }
+  AR.cruda = (AR.cruda + (((h - AR.cruda + 540) % 360) - 180) * 0.25 + 360) % 360;   // suavizado
+  AR.rumbo = (AR.cruda + AR.ajuste + 360) % 360;
+}
+function arEscuchar() { window.addEventListener('deviceorientationabsolute', alOrientar); window.addEventListener('deviceorientation', alOrientar); }
+async function arCamara() {
+  try { if (window.DeviceOrientationEvent && DeviceOrientationEvent.requestPermission) await DeviceOrientationEvent.requestPermission(); } catch (e) { }
+  arEscuchar();
+  try {
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) throw new Error('sin cámara');
+    AR.stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: 'environment' } }, audio: false });
+    const v = $('#arVideo'); v.srcObject = AR.stream; await v.play(); elAR.classList.add('cam');
+  } catch (e) { AR.stream = null; toast('No se pudo abrir la cámara (hace falta permiso y HTTPS). Sigue el modo simulación.'); }
+  arHud();
+}
+function arAbrir() {
+  aObrajes(); cerrar(); marcarTab('camara');
+  AR.on = true; AR.paso = 1; AR.claveDest = ''; elAR.classList.add('on'); document.body.classList.add('ar'); arEscuchar(); arCalcular();
+  if (!AR.brujula && AR.ruta && AR.ruta.pts.length > 1) { const p = AR.ruta.pts, q = arPos(); AR.rumbo = (rumboPlano(p[1][0] - q[0], p[1][1] - q[1]) + 325) % 360; }   // en simulación arranca casi de frente
+  requestAnimationFrame(arCuadro);
+}
+function arCerrar() {
+  if (AR.stream) { AR.stream.getTracks().forEach(t => t.stop()); AR.stream = null; }
+  window.removeEventListener('deviceorientationabsolute', alOrientar); window.removeEventListener('deviceorientation', alOrientar);
+  AR.on = AR.brujula = false; elAR.classList.remove('on', 'cam'); document.body.classList.remove('ar'); marcarTab('mapa');
+  if (estado.ruta) irA(estado.ruta.dest);
+}
+$('#arX').onclick = arCerrar;
+$('#arCam').onclick = arCamara;
+$('#arCal').onclick = () => { AR.ajuste = (AR.ajuste + AR.rel + 360) % 360; AR.rumbo = (AR.cruda + AR.ajuste + 360) % 360; toast('Brújula calibrada'); };
+$('#arSig').onclick = () => { AR.paso = arSiguiente() + 1; AR.clave = ''; arHud(); };
+$('#arDest').addEventListener('click', e => {
+  const b = e.target.closest('button'); if (!b) return; const o = AR.lista[+b.dataset.i];
+  estado.ruta = { dest: o.dest, r: o.r }; estado.llegado = null; AR.paso = 1; AR.claveDest = ''; arCalcular();
+});
+(function () {   // sin brújula: arrastrar gira la vista
+  let x0 = null;
+  elAR.addEventListener('pointerdown', e => { x0 = e.target.closest('button,#arDest') ? null : e.clientX; });
+  elAR.addEventListener('pointermove', e => { if (x0 === null || AR.brujula) return; AR.rumbo = (AR.rumbo - (e.clientX - x0) * 0.35 + 360) % 360; x0 = e.clientX; });
+  ['pointerup', 'pointercancel', 'pointerleave'].forEach(t => elAR.addEventListener(t, () => x0 = null));
+})();
+
+/* =====================================================================
+   OTROS CAMPUS  (por ahora solo se pueden elegir: muestran un bloque de referencia)
+   Para modelarlos de verdad harán falta su plano, sus pisos y sus caminos, como en Obrajes.
+   ===================================================================== */
+const CAMPUS = {
+  obrajes: { nombre: 'Campus Obrajes · La Paz' },
+  arq: { nombre: 'Arquitectura', bloque: 'Bloque M · Arquitectura', letra: 'M', pisos: 3, dir: 'Av. 14 de Septiembre, Obrajes (frente al campus central)',
+         dentro: ['Carrera de Arquitectura', 'Aulas M1 – M5', 'Laboratorios', 'Biblioteca', 'Sala Cowork', 'Área Deportiva'] },
+  dis: { nombre: 'Diseño', bloque: 'Bloque U · Diseño', letra: 'U', pisos: 3, dir: 'Av. Héctor Ormachea Nº 4899, esquina Calle 3, Obrajes',
+         dentro: ['Carrera de Diseño Gráfico y Comunicación Visual', 'Carrera de Diseño Digital', 'Aulas U1 – U5', 'Laboratorios de Computación', 'Media Lab', 'Biblioteca'] },
+  med: { nombre: 'Medicina', bloque: 'Bloque V · Medicina', letra: 'V', pisos: 4, dir: 'Calle 13 de Obrajes, esquina Av. Héctor Ormachea',
+         dentro: ['Carrera de Medicina'] },
+};
+let campusActual = 'obrajes';
+const delCampusPrincipal = scene.children.filter(o => !o.isLight && o !== base);   // todo lo dibujado hasta aquí es Obrajes
+const otroG = new THREE.Group(); otroG.visible = false; scene.add(otroG);
+function elegirCampus(id) {
+  campusActual = id; const c = CAMPUS[id], principal = id === 'obrajes';
+  limpiarRuta(); estado.ruta = null; cerrarPisos(true); cerrar();
+  delCampusPrincipal.forEach(o => o.visible = principal);
+  gpsG.visible = principal && !!estado.gps; pin.visible = inicio.visible = pulso.visible = false;
+  document.body.classList.toggle('otro', !principal);
+  while (otroG.children.length) otroG.remove(otroG.children[0]);
+  otroG.visible = !principal;
+  if (principal) { marcarTab('mapa'); vistaGeneral(true); return; }
+  const poli = [[36, 34], [64, 34], [64, 53], [36, 53]], h = ALTO_PISO;
+  const lote = new THREE.Mesh(new THREE.ShapeGeometry(forma([[26, 26], [74, 26], [74, 61], [26, 61]])), new THREE.MeshStandardMaterial({ color: 0xf6f1e3, roughness: 1 }));
+  lote.rotation.x = -Math.PI / 2; lote.position.y = 0.02; lote.receiveShadow = true; otroG.add(lote);
+  for (let i = 0; i < c.pisos; i++) {
+    const mapa = texturaFachada(hex(AZUL), '#9fb0d8', '#44539e').clone(); mapa.needsUpdate = true; mapa.repeat.set(1 / 3.2, 1 / (h - 0.13));
+    const m = new THREE.Mesh(new THREE.ExtrudeGeometry(forma(poli), { depth: h - 0.13, bevelEnabled: false }),
+      [new THREE.MeshStandardMaterial({ color: AZUL_TECHO, roughness: 0.85 }), new THREE.MeshStandardMaterial({ map: mapa, roughness: 0.7 })]);
+    m.rotation.x = -Math.PI / 2; m.position.y = 0.1 + i * h; m.castShadow = m.receiveShadow = true; otroG.add(m);
+  }
+  const e = etiqueta(c.letra, { alto: 4 }); e.position.copy(V(50, 43.5, c.pisos * h + 3.5)); otroG.add(e);
+  volar(V(50, 43.5, 2), 120, 0.95, AZIMUT);
+  abrir(`<h2>${esc(c.bloque)}</h2><p class="sub">${esc(c.dir)}</p>
+    <div class="chips">${c.dentro.map(d => `<span>${esc(d)}</span>`).join('')}</div>
+    <div class="card"><span class="tag azul">En desarrollo</span><b>Este campus todavía no está modelado</b>
+    <div class="meta">Por ahora es solo una referencia. El siguiente paso es cargar su plano, sus pisos y sus caminos, igual que en el Campus Obrajes.</div></div>
+    <div class="fila"><button class="btn azul" data-act="volver">Volver al Campus Obrajes</button></div>`);
+}
+const selCampus = $('#selCampus');
+selCampus.innerHTML = Object.keys(CAMPUS).map(k => `<option value="${k}">${esc(CAMPUS[k].nombre)}</option>`).join('');
+selCampus.onchange = () => elegirCampus(selCampus.value);
+
+/* =====================================================================
+   ENTORNO  (decoración: cielo, barrio de Obrajes en volúmenes claros y cordillera al fondo)
+   ===================================================================== */
+(function entorno() {
+  // cielo en degradé
+  const cv = document.createElement('canvas'); cv.width = 4; cv.height = 256; const g = cv.getContext('2d');
+  const grad = g.createLinearGradient(0, 0, 0, 256);
+  grad.addColorStop(0, '#9cc4ee'); grad.addColorStop(0.55, '#d6e6f5'); grad.addColorStop(1, '#f1ede2');
+  g.fillStyle = grad; g.fillRect(0, 0, 4, 256);
+  scene.background = new THREE.CanvasTexture(cv);
+  scene.fog = new THREE.Fog(0xe4ebf0, 520, 1500);
+
+  let sem = 11; const rnd = () => (sem = (sem * 16807) % 2147483647) / 2147483647;
+  // manzanas vecinas: cajas claras en cuadrícula, dejando libres el campus y la avenida
+  const casas = [], arboles = [];
+  for (let gx = -9; gx <= 9; gx++) for (let gz = -9; gz <= 9; gz++) {
+    const cx = gx * 30, cz = gz * 26 + 4;
+    if (Math.abs(cx) < 72 && cz > -62 && cz < 66) continue;          // el campus y su avenida
+    if (Math.hypot(cx, cz) > 270) continue;
+    for (let i = 0; i < 4; i++) {                                     // cuatro lotes por manzana
+      const w = 8 + rnd() * 4, d = 7 + rnd() * 3, h = 1.6 + rnd() * rnd() * 9;
+      const x = cx + (i % 2 ? 6.5 : -6.5), z = cz + (i < 2 ? 5.5 : -5.5);
+      if (rnd() < 0.14) { arboles.push([x, z]); continue; }           // algunos lotes son plazuelas
+      casas.push([x, z, w, h, d]);
+    }
+  }
+  const mc = new THREE.InstancedMesh(new THREE.BoxGeometry(1, 1, 1), new THREE.MeshStandardMaterial({ color: 0xf3f1ec, roughness: 1 }), casas.length);
+  const o = new THREE.Object3D(), col = new THREE.Color();
+  casas.forEach((c, i) => { o.position.set(c[0], c[3] / 2, c[1]); o.scale.set(c[2], c[3], c[4]); o.rotation.set(0, 0, 0); o.updateMatrix(); mc.setMatrixAt(i, o.matrix);
+    mc.setColorAt(i, col.setHex([0xf3f1ec, 0xe9e6de, 0xf7f5f1, 0xe3ded2][Math.floor(rnd() * 4)])); });
+  mc.receiveShadow = true; scene.add(mc);
+  const ma = new THREE.InstancedMesh(new THREE.IcosahedronGeometry(1, 1), new THREE.MeshStandardMaterial({ color: 0x7dbb78, roughness: 1, flatShading: true }), arboles.length * 3);
+  let k = 0; arboles.forEach(a => { for (let j = 0; j < 3; j++) { const e = 1.6 + rnd() * 1.4; o.position.set(a[0] + (rnd() - 0.5) * 8, e, a[1] + (rnd() - 0.5) * 7); o.scale.setScalar(e); o.updateMatrix(); ma.setMatrixAt(k++, o.matrix); } });
+  scene.add(ma);
+
+  // cordillera: anillo de cerros con algunos picos nevados
+  const cerro = new THREE.MeshStandardMaterial({ color: 0xa9b6c9, roughness: 1, flatShading: true });
+  const cerca = new THREE.MeshStandardMaterial({ color: 0xc3b9a4, roughness: 1, flatShading: true });
+  const nieve = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 1, flatShading: true });
+  for (let i = 0; i < 46; i++) {
+    const a = i / 46 * Math.PI * 2 + rnd() * 0.1, lejos = i % 2 === 0, r = lejos ? 640 + rnd() * 120 : 430 + rnd() * 70;
+    const h = lejos ? 110 + rnd() * 110 : 40 + rnd() * 45, ancho = lejos ? 110 + rnd() * 60 : 90 + rnd() * 50;
+    const m = new THREE.Mesh(new THREE.ConeGeometry(ancho, h, 6 + Math.floor(rnd() * 3)), lejos ? cerro : cerca);
+    m.position.set(Math.sin(a) * r, h / 2 - 2, Math.cos(a) * r); m.rotation.y = rnd() * 3; scene.add(m);
+    if (lejos && h > 150) { const n = new THREE.Mesh(new THREE.ConeGeometry(ancho * 0.36, h * 0.36, 6), nieve); n.position.set(m.position.x, h - h * 0.18 - 1.5, m.position.z); n.rotation.y = m.rotation.y; scene.add(n); }
+  }
+})();
+
+// Arranque
+ajustar(); vistaGeneral(false); requestAnimationFrame(cuadro);
+window.UCB = { estado, REFERENCIAS_GPS, GEO, AR, NODOS, BLOQUES, CAMINOS, EVENTOS, nomNivel, dijkstra, calcRuta, irA, verPisos, alPosicion, activarGPS, seleccionarBloque,
+  estadoEvento, ubicarAula, buscar, enlace, leerEnlace, fijarOrigen, panelBuscar, panelQR, panelAdmin, arAbrir, arCerrar };
+// App instalable y con caché para abrir sin internet (solo cuando se sirve por http/https)
+if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol)) navigator.serviceWorker.register('sw.js').catch(() => { });
+</script>
+</body>
+</html>
