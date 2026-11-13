@@ -1,33 +1,7 @@
 {
  "fuente": "https://agenda.lpz.ucb.edu.bo/",
- "actualizado": "2026-11-12 21:44",
+ "actualizado": "2026-11-13 05:21",
  "eventos": [
-  {
-   "id": "ag242",
-   "titulo": "TEDxUCB",
-   "tipo": "Formativo",
-   "bloque": "D",
-   "piso": 5,
-   "lugar": "Bloque “D”, 5to. piso, Paraninfo U.C.B. y Capilla San Pablo",
-   "fecha": "2026-11-12",
-   "hasta": "2026-11-12",
-   "hora": "07:15",
-   "organizador": "Facultad de Ciencias Económicas y Financieras",
-   "postergado": false
-  },
-  {
-   "id": "ag245",
-   "titulo": "Tech Mech Hackathon",
-   "tipo": "Formativo",
-   "bloque": "A",
-   "piso": 0,
-   "lugar": "Bloque “A”, Coliseo Multifuncional de la Universidad",
-   "fecha": "2026-11-12",
-   "hasta": "2026-11-12",
-   "hora": "09:00",
-   "organizador": "Carrera de Ingeniería Mecatrónica",
-   "postergado": false
-  },
   {
    "id": "ag207",
    "titulo": "19 Aniversario de la Carrera de Ingeniería Mecatrónica",
