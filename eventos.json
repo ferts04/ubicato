@@ -1,20 +1,7 @@
 {
  "fuente": "https://agenda.lpz.ucb.edu.bo/",
- "actualizado": "2026-11-13 19:26",
+ "actualizado": "2026-11-14 01:53",
  "eventos": [
-  {
-   "id": "ag207",
-   "titulo": "19 Aniversario de la Carrera de Ingeniería Mecatrónica",
-   "tipo": "Sociales",
-   "bloque": "D",
-   "piso": 5,
-   "lugar": "Bloque “D”, 5to. piso, Paraninfo U.C.B.",
-   "fecha": "2026-11-13",
-   "hasta": "2026-11-13",
-   "hora": "18:00",
-   "organizador": "Ingeniería Mecatronica",
-   "postergado": false
-  },
   {
    "id": "ag246",
    "titulo": "Conferencia \"Razón humana y Ciencia espiritual\" por el Dr. Ricardo Castañón Gómez",
