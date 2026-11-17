@@ -1,20 +1,7 @@
 {
  "fuente": "https://agenda.lpz.ucb.edu.bo/",
- "actualizado": "2026-11-16 23:37",
+ "actualizado": "2026-11-17 08:59",
  "eventos": [
-  {
-   "id": "ag246",
-   "titulo": "Conferencia \"Razón humana y Ciencia espiritual\" por el Dr. Ricardo Castañón Gómez",
-   "tipo": "Formativo",
-   "bloque": "D",
-   "piso": 5,
-   "lugar": "Bloque “D”, 5to. piso, Paraninfo U.C.B. y Capilla San Pablo",
-   "fecha": "2026-11-16",
-   "hasta": "2026-11-16",
-   "hora": "18:30",
-   "organizador": "Gabinete de Comunicación ",
-   "postergado": false
-  },
   {
    "id": "ag247",
    "titulo": "Presentación Musicoterapia y Danza",
