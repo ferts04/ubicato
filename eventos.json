@@ -1,7 +1,46 @@
 {
  "fuente": "https://agenda.lpz.ucb.edu.bo/",
- "actualizado": "2026-11-18 08:53",
+ "actualizado": "2026-11-18 17:16",
  "eventos": [
+  {
+   "id": "ag249",
+   "titulo": "Presentación del Taller de Teatro de la U.C.B. ¿Hay alguien A.I.?",
+   "tipo": "Cultural",
+   "bloque": "AGORA",
+   "piso": 0,
+   "lugar": "Espacio Ágora",
+   "fecha": "2026-11-17",
+   "hasta": "2026-11-18",
+   "hora": "19:00",
+   "organizador": "Departamento de Cultura y Arte",
+   "postergado": false
+  },
+  {
+   "id": "ag250",
+   "titulo": "Gala Politológica",
+   "tipo": "Institucional",
+   "bloque": "I",
+   "piso": 3,
+   "lugar": "Bloque “I”, 3er. piso, Sala VIP de la Biblioteca Central.",
+   "fecha": "2026-11-20",
+   "hasta": "2026-11-20",
+   "hora": "10:30",
+   "organizador": "Carrera de Ciencias Políticas y Relaciones",
+   "postergado": false
+  },
+  {
+   "id": "ag248",
+   "titulo": "Conferencia: Tras las Huellas de la Niñez Indígena en el Archivo Colonial (Potosí y La Plata, 1570-1640)",
+   "tipo": "Academico",
+   "bloque": "I",
+   "piso": 3,
+   "lugar": "Bloque “I”, 3er. piso, Sala VIP de la Biblioteca Central.",
+   "fecha": "2026-11-24",
+   "hasta": "2026-11-24",
+   "hora": "16:00",
+   "organizador": "Departamento de Cultura y Arte",
+   "postergado": false
+  },
   {
    "id": "ag247",
    "titulo": "Presentación Musicoterapia y Danza",
