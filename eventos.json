@@ -1,20 +1,7 @@
 {
  "fuente": "https://agenda.lpz.ucb.edu.bo/",
- "actualizado": "2026-11-18 23:04",
+ "actualizado": "2026-11-19 07:27",
  "eventos": [
-  {
-   "id": "ag249",
-   "titulo": "Presentación del Taller de Teatro de la U.C.B. ¿Hay alguien A.I.?",
-   "tipo": "Cultural",
-   "bloque": "AGORA",
-   "piso": 0,
-   "lugar": "Espacio Ágora",
-   "fecha": "2026-11-17",
-   "hasta": "2026-11-18",
-   "hora": "19:00",
-   "organizador": "Departamento de Cultura y Arte",
-   "postergado": false
-  },
   {
    "id": "ag250",
    "titulo": "Gala Politológica",
