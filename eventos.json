@@ -1,7 +1,20 @@
 {
  "fuente": "https://agenda.lpz.ucb.edu.bo/",
- "actualizado": "2026-11-19 07:27",
+ "actualizado": "2026-11-19 16:22",
  "eventos": [
+  {
+   "id": "ag251",
+   "titulo": "Feria de Concientización sobre la radiación",
+   "tipo": "Formativo",
+   "bloque": "J",
+   "piso": 0,
+   "lugar": "Bloque “J”, Atrio 2",
+   "fecha": "2026-11-19",
+   "hasta": "2026-11-19",
+   "hora": "09:00",
+   "organizador": "Carrera de Ingeniería Biomédica",
+   "postergado": false
+  },
   {
    "id": "ag250",
    "titulo": "Gala Politológica",
