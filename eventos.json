@@ -1,6 +1,6 @@
 {
  "fuente": "https://agenda.lpz.ucb.edu.bo/",
- "actualizado": "2026-11-24 01:16",
+ "actualizado": "2026-11-24 13:24",
  "eventos": [
   {
    "id": "ag248",
@@ -16,6 +16,19 @@
    "postergado": false
   },
   {
+   "id": "ag252",
+   "titulo": "Feria de Tecnología de Alimentos",
+   "tipo": "Formativo",
+   "bloque": "ATRIO",
+   "piso": 0,
+   "lugar": "Bloque “K”, Atrio Principal",
+   "fecha": "2026-11-25",
+   "hasta": "2026-11-25",
+   "hora": "08:30",
+   "organizador": "Carrera de Ingeniería Industrial",
+   "postergado": false
+  },
+  {
    "id": "ag247",
    "titulo": "Presentación Musicoterapia y Danza",
    "tipo": "Cultural",
@@ -25,6 +38,32 @@
    "fecha": "2026-11-25",
    "hasta": "2026-11-25",
    "hora": "16:00",
+   "organizador": "Pastoral de Sede ",
+   "postergado": false
+  },
+  {
+   "id": "ag253",
+   "titulo": "Concierto Américas - Taller de Coro U.C.B.",
+   "tipo": "Cultural",
+   "bloque": "D",
+   "piso": 5,
+   "lugar": "Bloque “D”, 5to. piso, Capilla “San Pablo”.",
+   "fecha": "2026-11-26",
+   "hasta": "2026-11-26",
+   "hora": "19:00",
+   "organizador": "Departamento de Cultura y Arte",
+   "postergado": false
+  },
+  {
+   "id": "ag254",
+   "titulo": "Recolección Relámpago Botellas PET",
+   "tipo": "Pastoral",
+   "bloque": "ATRIO",
+   "piso": 0,
+   "lugar": "Bloque “K”, Atrio Principal",
+   "fecha": "2026-11-27",
+   "hasta": "2026-11-27",
+   "hora": "10:00",
    "organizador": "Pastoral de Sede ",
    "postergado": false
   }
