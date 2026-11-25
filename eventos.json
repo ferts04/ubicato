@@ -1,20 +1,7 @@
 {
  "fuente": "https://agenda.lpz.ucb.edu.bo/",
- "actualizado": "2026-11-24 22:09",
+ "actualizado": "2026-11-25 08:28",
  "eventos": [
-  {
-   "id": "ag248",
-   "titulo": "Conferencia: Tras las Huellas de la Niñez Indígena en el Archivo Colonial (Potosí y La Plata, 1570-1640)",
-   "tipo": "Academico",
-   "bloque": "I",
-   "piso": 3,
-   "lugar": "Bloque “I”, 3er. piso, Sala VIP de la Biblioteca Central.",
-   "fecha": "2026-11-24",
-   "hasta": "2026-11-24",
-   "hora": "16:00",
-   "organizador": "Departamento de Cultura y Arte",
-   "postergado": false
-  },
   {
    "id": "ag252",
    "titulo": "Feria de Tecnología de Alimentos",
