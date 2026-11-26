@@ -1,46 +1,7 @@
 {
  "fuente": "https://agenda.lpz.ucb.edu.bo/",
- "actualizado": "2026-11-25 18:18",
+ "actualizado": "2026-11-26 00:50",
  "eventos": [
-  {
-   "id": "ag252",
-   "titulo": "Feria de Tecnología de Alimentos",
-   "tipo": "Formativo",
-   "bloque": "ATRIO",
-   "piso": 0,
-   "lugar": "Bloque “K”, Atrio Principal",
-   "fecha": "2026-11-25",
-   "hasta": "2026-11-25",
-   "hora": "08:30",
-   "organizador": "Carrera de Ingeniería Industrial",
-   "postergado": false
-  },
-  {
-   "id": "ag258",
-   "titulo": "Consejo Academico de Sede",
-   "tipo": "Academico",
-   "bloque": "D",
-   "piso": 2,
-   "lugar": "Bloque “D”, 2do. piso, Auditorio 2",
-   "fecha": "2026-11-25",
-   "hasta": "2026-11-25",
-   "hora": "14:00",
-   "organizador": "Dirección Académica de Sede",
-   "postergado": false
-  },
-  {
-   "id": "ag247",
-   "titulo": "Presentación Musicoterapia y Danza",
-   "tipo": "Cultural",
-   "bloque": "D",
-   "piso": 5,
-   "lugar": "Bloque “D”, 5to. piso, Paraninfo U.C.B.",
-   "fecha": "2026-11-25",
-   "hasta": "2026-11-25",
-   "hora": "16:00",
-   "organizador": "Pastoral de Sede ",
-   "postergado": false
-  },
   {
    "id": "ag255",
    "titulo": "Santa Eucaristía por la Graduación – Noviembre 2026",
