@@ -1,6 +1,6 @@
 {
  "fuente": "https://agenda.lpz.ucb.edu.bo/",
- "actualizado": "2026-11-26 10:54",
+ "actualizado": "2026-11-26 19:38",
  "eventos": [
   {
    "id": "ag255",
@@ -78,6 +78,19 @@
    "hasta": "2026-12-01",
    "hora": "08:30",
    "organizador": "Carrera de Ingeniería Industrial",
+   "postergado": false
+  },
+  {
+   "id": "ag264",
+   "titulo": "Semestre Terminado, Espiritu Navideño Activado",
+   "tipo": "Sociales",
+   "bloque": "J",
+   "piso": 0,
+   "lugar": "Bloque “J”, Atrio 2",
+   "fecha": "2026-12-01",
+   "hasta": "2026-12-01",
+   "hora": "10:30",
+   "organizador": "Marketing y Comunicación",
    "postergado": false
   },
   {
