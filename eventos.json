@@ -1,33 +1,7 @@
 {
  "fuente": "https://agenda.lpz.ucb.edu.bo/",
- "actualizado": "2026-11-26 19:38",
+ "actualizado": "2026-11-27 03:51",
  "eventos": [
-  {
-   "id": "ag255",
-   "titulo": "Santa Eucaristía por la Graduación – Noviembre 2026",
-   "tipo": "Institucional",
-   "bloque": "D",
-   "piso": 5,
-   "lugar": "Bloque “D”, 5to. piso, Capilla “San Pablo”.",
-   "fecha": "2026-11-26",
-   "hasta": "2026-11-26",
-   "hora": "11:00",
-   "organizador": "Gabinete de Comunicación",
-   "postergado": false
-  },
-  {
-   "id": "ag253",
-   "titulo": "Concierto Américas - Taller de Coro U.C.B.",
-   "tipo": "Cultural",
-   "bloque": "D",
-   "piso": 5,
-   "lugar": "Bloque “D”, 5to. piso, Capilla “San Pablo”.",
-   "fecha": "2026-11-26",
-   "hasta": "2026-11-26",
-   "hora": "19:00",
-   "organizador": "Departamento de Cultura y Arte",
-   "postergado": false
-  },
   {
    "id": "ag254",
    "titulo": "Recolección Relámpago Botellas PET",
