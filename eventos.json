@@ -1,20 +1,7 @@
 {
  "fuente": "https://agenda.lpz.ucb.edu.bo/",
- "actualizado": "2026-11-27 21:18",
+ "actualizado": "2026-11-28 06:04",
  "eventos": [
-  {
-   "id": "ag254",
-   "titulo": "Recolección Relámpago Botellas PET",
-   "tipo": "Pastoral",
-   "bloque": "ATRIO",
-   "piso": 0,
-   "lugar": "Bloque “K”, Atrio Principal",
-   "fecha": "2026-11-27",
-   "hasta": "2026-11-27",
-   "hora": "10:00",
-   "organizador": "Pastoral de Sede ",
-   "postergado": false
-  },
   {
    "id": "ag256",
    "titulo": "Ceremonia de Graduación - Noviembre 2026: Primera Parte",
